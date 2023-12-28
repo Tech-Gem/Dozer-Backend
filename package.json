@@ -14,8 +14,8 @@
   },
   "homepage": "https://github.com/Tech-Gem/Dozer-Backend#readme",
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js"
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js"
   },
   "dependencies": {
     "@prisma/client": "^4.13.0",
