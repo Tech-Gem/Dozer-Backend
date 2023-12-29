@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       jobTitle: DataTypes.STRING,
       phoneNumber: DataTypes.STRING,
-      profulePicture: DataTypes.STRING,
+      profilePicture: DataTypes.STRING,
       role: {
         type: DataTypes.ENUM,
         values: ["admin", "user"],

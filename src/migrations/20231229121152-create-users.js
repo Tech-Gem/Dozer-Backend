@@ -30,7 +30,7 @@ module.exports = {
       },
       jobTitle: Sequelize.STRING,
       phoneNumber: Sequelize.STRING,
-      profulePicture: Sequelize.STRING,
+      profilePicture: Sequelize.STRING,
       role: {
         type: Sequelize.ENUM,
         values: ["admin", "user"],
