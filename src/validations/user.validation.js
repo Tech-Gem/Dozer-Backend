@@ -1,10 +1,10 @@
 const { body } = require("express-validator");
 
 const addUserValidation = [
-  body("firstName").notEmpty().withMessage("First name is required"),
-  body("lastName").notEmpty().withMessage("Last name is required"),
   body("email").isEmail().withMessage("Email is required"),
   body("password").notEmpty().withMessage("Password is required"),
+  body("phoneNumber").notEmpty().withMessage("Phone number is required"),
+  body("role").notEmpty().withMessage("Role is required"),
 ];
 
 module.exports = {

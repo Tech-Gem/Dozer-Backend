@@ -3,13 +3,11 @@ const { Model } = require("sequelize");
 const bcrypt = require("bcrypt");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      User.hasOne(models.UserProfile, {
+        foreignKey: "userId", // Adjust the foreign key according to your model definition
+        onDelete: "CASCADE",
+      });
     }
   }
   User.init(
@@ -22,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       email: {
         type: DataTypes.STRING,
+        required: true,
         unique: true,
         validate: {
           isEmail: true,
@@ -29,22 +28,24 @@ module.exports = (sequelize, DataTypes) => {
       },
       password: {
         type: DataTypes.STRING,
+        required: true,
       },
-      firstName: DataTypes.STRING,
-      middleName: DataTypes.STRING,
-      lastName: DataTypes.STRING,
-      fullName: {
+      phoneNumber: {
         type: DataTypes.STRING,
-        get() {
-          return `${this.firstName} ${this.middleName} ${this.lastName}`;
-        },
+        required: true,
+        unique: true,
       },
-      jobTitle: DataTypes.STRING,
-      phoneNumber: DataTypes.STRING,
-      profilePicture: DataTypes.STRING,
+      phoneNumberVerified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      verificationId: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       role: {
         type: DataTypes.ENUM,
-        values: ["admin", "user"],
+        values: ["admin", "user", "renter"],
         defaultValue: "user",
       },
     },
@@ -64,8 +65,10 @@ module.exports = (sequelize, DataTypes) => {
           }
         },
         beforeUpdate: (user) => {
-          const salt = bcrypt.genSaltSync();
-          user.password = bcrypt.hashSync(user.password, salt);
+          if (user.changed("password")) {
+            const salt = bcrypt.genSaltSync();
+            user.password = bcrypt.hashSync(user.password, salt);
+          }
         },
         beforeBulkUpdate: (users) => {
           for (const user of users) {
