@@ -12,10 +12,6 @@ const { authenticate } = require("../middlewares/authentication");
 // get all users
 router.route("/").get(authenticate, getUsers);
 
-router
-  .route("/:id")
-  .get(authenticate, getUser)
-  .patch(authenticate, updateUser)
-  .delete(authenticate, deleteUser);
+router.route("/:id").get(authenticate, getUser);
 
 module.exports = router;

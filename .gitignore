@@ -105,5 +105,6 @@ dist
 
 
 src/config/*.json
-public/images/events/*.png
-public/images/ad/*.png
+public/equipment
+public/renter
+public/user/profile/*
