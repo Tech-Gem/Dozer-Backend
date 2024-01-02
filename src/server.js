@@ -27,6 +27,10 @@ app.use(compression());
 
 app.use("/api/v1", routes);
 
+app.get("/", (req, res) => {
+  res.send("Welcome to Dozer API");
+});
+
 app.use("*", (req, res, next) => {
   res.status(StatusCodes.NOT_FOUND).json({
     status: "error",
