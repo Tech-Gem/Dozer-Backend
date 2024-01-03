@@ -8,9 +8,9 @@ const {
 const router = express.Router();
 
 // POST /sendOtp
-router.route("/sendOtp").get(sendSecurityCode);
+router.route("/sendOtp").post(sendSecurityCode);
 
 // POST /verifyCode
-router.route("/verifyOtp").get(verifySecurityCode);
+router.route("/verifyOtp").post(verifySecurityCode);
 
 module.exports = router;
