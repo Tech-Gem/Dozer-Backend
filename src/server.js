@@ -1,9 +1,11 @@
 require("dotenv").config();
 require("express-async-errors");
+
 require("dotenv-safe").config();
 const db = require("./models/index");
 
 const express = require("express");
+const session = require("express-session");
 const morgan = require("morgan");
 const path = require("path");
 const cors = require("cors");
@@ -24,6 +26,19 @@ app.use(cors({}));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 app.use(compression());
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      secure: false, // Change to true if using HTTPS
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+    },
+  })
+);
 
 app.use("/api/v1", routes);
 

@@ -3,11 +3,10 @@ const { User } = require("../models");
 
 // Function to send the security code (OTP)
 exports.sendSecurityCode = async (req, res) => {
-  const { phoneNumber } = req.body;
+  const phoneNumber = req.session.phoneNumber;
 
   try {
     let user = await User.findOne({ where: { phoneNumber } });
-    console.log(user);
 
     if (!user) {
       user = await User.create({ phoneNumber });
@@ -37,10 +36,9 @@ exports.sendSecurityCode = async (req, res) => {
     // Make an HTTP GET request to send the security code
     const response = await axios.get(url, { headers });
 
-    console.log("Response data:", response.data); // Log the response data for debugging
+    // console.log("Response data:", response.data); // Log the response data for debugging
 
     if (response.data.acknowledge === "success") {
-      console.log(response.data.response.verificationId);
       const receivedVerificationId = response.data.response.verificationId; // Extracting verificationId from the request body
 
       // Update the user with the verificationId
@@ -61,9 +59,11 @@ exports.sendSecurityCode = async (req, res) => {
 
 // Function to verify the security code
 exports.verifySecurityCode = async (req, res) => {
-  const { phoneNumber, code } = req.body;
+  const { code } = req.body;
 
   try {
+    const phoneNumber = req.session.phoneNumber;
+
     const user = await User.findOne({ where: { phoneNumber } });
 
     if (!user) {
