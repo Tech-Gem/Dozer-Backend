@@ -55,8 +55,10 @@ module.exports = (sequelize, DataTypes) => {
       tableName: "users",
       hooks: {
         beforeCreate: (user) => {
-          const salt = bcrypt.genSaltSync();
-          user.password = bcrypt.hashSync(user.password, salt);
+          if (user.changed("password")) {
+            const salt = bcrypt.genSaltSync();
+            user.password = bcrypt.hashSync(user.password, salt);
+          }
         },
         beforeBulkCreate: (users) => {
           for (const user of users) {

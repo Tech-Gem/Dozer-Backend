@@ -1,8 +1,6 @@
 const express = require("express");
 const {
   getUsers,
-  updateUser,
-  deleteUser,
   getUser,
 } = require("../controllers/user.controller");
 
