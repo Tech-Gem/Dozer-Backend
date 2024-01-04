@@ -17,6 +17,15 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
+  class Equipment extends Model {
+    static associate(models) {
+      Equipment.hasMany(models.Booking, {
+        foreignKey: 'equipmentId',
+        onDelete: 'CASCADE',
+      });
+    }
+  }
+  
   Equipment.init(
     {
       id: {
