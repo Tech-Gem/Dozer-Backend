@@ -12,7 +12,7 @@ const cors = require("cors");
 const { StatusCodes } = require("http-status-codes");
 const routes = require("./routes");
 const compression = require("compression");
-const errorHandler = require("./middlewares/errorHandler");
+const errorHandler = require("./middlewares/errorHandler.middlewares");
 
 db.sequelize
   .authenticate()
@@ -26,6 +26,7 @@ app.use(cors({ credentials: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 app.use(compression());
+app.use(express.urlencoded({ extended: false }));
 
 app.use(
   session({
@@ -69,9 +70,9 @@ const seedAdminUser = async () => {
   }
 };
 
-// db.sequelize.sync().then(() => {
+db.sequelize.sync().then(() => {
 app.listen(process.env.PORT, () => {
   seedAdminUser();
   console.log(`Server running on port ${process.env.PORT}`);
 });
-// });
+});

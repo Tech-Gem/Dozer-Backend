@@ -1,10 +1,10 @@
-const { User, UserProfile } = require("../models");
+const { User, RenterProfile, Equipment } = require("../models");
 const { StatusCodes } = require("http-status-codes");
 const { uploadToCloudinary } = require("../middlewares/multer.middlewares");
 
-exports.createUserProfile = async (req, res, next) => {
+exports.createRenterProfile = async (req, res, next) => {
   try {
-    const requiredFields = ["firstName", "lastName", "jobTitle"];
+    const requiredFields = ["firstName", "lastName", "company"];
     const missingFields = requiredFields.filter((field) => !req.body[field]);
 
     if (missingFields.length > 0) {
@@ -16,13 +16,13 @@ exports.createUserProfile = async (req, res, next) => {
       return res.status(StatusCodes.BAD_REQUEST).json({ error: errorMessage });
     }
 
-    const userId = req.user.id;
+    const renterId = req.user.id;
 
     if (!req.file || !req.file.buffer) {
       throw new Error("Image buffer not found");
     }
 
-    const folderName = "userProfile";
+    const folderName = "renterProfile";
 
     // Upload the image to Cloudinary
     const cloudinaryResult = await uploadToCloudinary(
@@ -31,31 +31,33 @@ exports.createUserProfile = async (req, res, next) => {
     );
 
     // Find or create the user profile associated with the user ID
-    const [userProfile, created] = await UserProfile.findOrCreate({
-      where: { userId },
+    const [renterProfile, created] = await RenterProfile.findOrCreate({
+      where: { renterId },
       defaults: {
         firstName: req.body.firstName,
         middleName: req.body.middleName || null,
         lastName: req.body.lastName,
         fullName: `${req.body.firstName} ${req.body.middleName} ${req.body.lastName}`,
-        jobTitle: req.body.jobTitle,
+        company: req.body.company,
+        address: req.body.address || null,
         image: cloudinaryResult.secure_url || null,
       },
     });
 
     // If the profile was not created (i.e., it already existed), update the profile
     if (!created) {
-      await userProfile.update({
+      await renterProfile.update({
         firstName: req.body.firstName,
         middleName: req.body.middleName || null,
         lastName: req.body.lastName,
         fullName: `${req.body.firstName} ${req.body.middleName} ${req.body.lastName}`,
-        jobTitle: req.body.jobTitle,
+        company: req.body.company,
+        address: req.body.address || null,
         image: cloudinaryResult.secure_url || null,
       });
     }
 
-    res.status(StatusCodes.CREATED).json({ status: "success", userProfile });
+    res.status(StatusCodes.CREATED).json({ status: "success", renterProfile });
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
     next(error);
@@ -63,9 +65,9 @@ exports.createUserProfile = async (req, res, next) => {
 };
 
 // Function to fetch all user profiles
-exports.getAllUserProfiles = async (req, res, next) => {
+exports.getAllRenterProfiles = async (req, res, next) => {
   try {
-    const allUserProfiles = await UserProfile.findAll({
+    const allRenterProfiles = await RenterProfile.findAll({
       include: [
         {
           model: User,
@@ -73,19 +75,20 @@ exports.getAllUserProfiles = async (req, res, next) => {
         },
       ],
       attributes: {
-        exclude: ["userId"],
+        exclude: ["renterId"],
       },
     });
 
     // Customized response object
-    const formattedUserProfiles = allUserProfiles.map((profile) => {
+    const formattedrenterProfiles = allRenterProfiles.map((profile) => {
       return {
         id: profile.id,
         fullName: profile.fullName,
         firstName: profile.firstName,
         middleName: profile.middleName,
         lastName: profile.lastName,
-        jobTitle: profile.jobTitle,
+        company: profile.company,
+        address: profile.address,
         image: profile.image,
         email: profile.User.email,
         phoneNumber: profile.User.phoneNumber,
@@ -98,7 +101,7 @@ exports.getAllUserProfiles = async (req, res, next) => {
 
     res
       .status(StatusCodes.OK)
-      .json({ status: "success", formattedUserProfiles });
+      .json({ status: "success", formattedrenterProfiles });
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
     next(error);
@@ -106,11 +109,11 @@ exports.getAllUserProfiles = async (req, res, next) => {
 };
 
 // Function to get a specific user profile by ID
-exports.getUserProfileById = async (req, res, next) => {
+exports.getRenterProfileById = async (req, res, next) => {
   try {
     const { id } = req.params; // Assuming you receive the profile ID from the request parameters
 
-    const userProfile = await UserProfile.findByPk(id, {
+    const renterProfile = await RenterProfile.findByPk(id, {
       include: [
         {
           model: User,
@@ -118,31 +121,32 @@ exports.getUserProfileById = async (req, res, next) => {
         },
       ],
       attributes: {
-        exclude: ["userId"],
+        exclude: ["renterId"],
       },
     });
 
-    if (!userProfile) {
+    if (!renterProfile) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "User profile not found" });
+        .json({ message: "Renter profile not found" });
     }
 
     // Customized response object
     const formattedProfile = {
-      id: userProfile.id,
-      fullName: userProfile.fullName,
-      firstName: userProfile.firstName,
-      middleName: userProfile.middleName,
-      lastName: userProfile.lastName,
-      jobTitle: userProfile.jobTitle,
-      image: userProfile.image,
-      createdAt: userProfile.createdAt,
-      updatedAt: userProfile.updatedAt,
-      email: userProfile.User.email,
-      phoneNumber: userProfile.User.phoneNumber,
-      phoneNumberVerified: userProfile.User.phoneNumberVerified,
-      role: userProfile.User.role,
+      id: renterProfile.id,
+      fullName: renterProfile.fullName,
+      firstName: renterProfile.firstName,
+      middleName: renterProfile.middleName,
+      lastName: renterProfile.lastName,
+      company: renterProfile.company,
+      address: renterProfile.address,
+      image: renterProfile.image,
+      createdAt: renterProfile.createdAt,
+      updatedAt: renterProfile.updatedAt,
+      email: renterProfile.User.email,
+      phoneNumber: renterProfile.User.phoneNumber,
+      phoneNumberVerified: renterProfile.User.phoneNumberVerified,
+      role: renterProfile.User.role,
     };
 
     res.status(StatusCodes.OK).json({ status: "success", formattedProfile });
@@ -152,24 +156,47 @@ exports.getUserProfileById = async (req, res, next) => {
   }
 };
 
+exports.getRenterEquipment = async (req, res, next) => {
+  try {
+    const { renterId } = req.params;
+
+    // Check if the renter ID exists
+    const renterProfile = await RenterProfile.findOne({
+      where: { id: renterId },
+    });
+    if (!renterProfile) {
+      return res.status(404).json({ error: "Renter ID not found" });
+    }
+
+    // Get the associated equipment for the renter
+    const renterEquipment = await Equipment.findAll({
+      where: { renterProfileId: renterId },
+    });
+
+    res.status(200).json({ renterEquipment });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Function to update a user profile by ID
-exports.updateUserProfile = async (req, res, next) => {
+exports.updateRenterProfile = async (req, res, next) => {
   try {
     const { id } = req.params; // Assuming you receive the profile ID from the request parameters
     const updateFields = req.body; // Assuming you receive the updated fields in the request body
 
-    const userProfile = await UserProfile.findByPk(id);
+    const renterProfile = await RenterProfile.findByPk(id);
 
-    if (!userProfile) {
+    if (!renterProfile) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "User profile not found" });
+        .json({ message: "Renter profile not found" });
     }
 
     // Update the user profile fields
-    await userProfile.update(updateFields);
+    await renterProfile.update(updateFields);
 
-    const updatedProfile = await UserProfile.findByPk(id, {
+    const updatedProfile = await RenterProfile.findByPk(id, {
       include: [
         {
           model: User,
@@ -177,7 +204,7 @@ exports.updateUserProfile = async (req, res, next) => {
         },
       ],
       attributes: {
-        exclude: ["userId"],
+        exclude: ["renterId"],
       },
     });
 
@@ -191,24 +218,24 @@ exports.updateUserProfile = async (req, res, next) => {
   }
 };
 
-exports.deleteUserProfile = async (req, res, next) => {
+exports.deleteRenterProfile = async (req, res, next) => {
   try {
     const { id } = req.params; // Assuming you receive the profile ID from the request parameters
 
-    const userProfile = await UserProfile.findByPk(id);
+    const renterProfile = await RenterProfile.findByPk(id);
 
-    if (!userProfile) {
+    if (!renterProfile) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: "User profile not found" });
+        .json({ message: "Renter profile not found" });
     }
 
     // Delete the user profile
-    await userProfile.destroy();
+    await renterProfile.destroy();
 
     res.status(StatusCodes.OK).json({
       status: "success",
-      message: "User profile deleted successfully",
+      message: "Renter profile deleted successfully",
     });
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });

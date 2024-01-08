@@ -1,48 +1,48 @@
-const { Equipment } = require("../models");
+const { Equipment, RenterProfile } = require("../models");
 const { StatusCodes } = require("http-status-codes");
-
-const multer = require("multer");
-const path = require("path");
-
-const multerStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/equipment/images");
-  },
-  filename: function (req, file, cb) {
-    const filename = `profile-${Date.now()}${path.extname(file.originalname)}`;
-    if (!req.body.imageUrl) {
-      req.body.imageUrl = filename;
-    }
-    cb(null, filename);
-  },
-});
-
-const multerFilter = function (req, file, cb) {
-  // Modify this function according to your allowed file types for profile pictures
-  if (
-    file.mimetype.startsWith("image/jpeg") ||
-    file.mimetype.startsWith("image/png") ||
-    file.mimetype.startsWith("image/jpg")
-  ) {
-    cb(null, true);
-  } else {
-    cb(new AppError("Invalid image format", 400), false);
-  }
-};
-
-const upload = multer({
-  storage: multerStorage,
-  fileFilter: multerFilter,
-}); // Change the field name to match the input field in your form
-
-exports.uploadImage = upload.single("imageUrl");
+const { uploadToCloudinary } = require("../middlewares/multer.middlewares");
 
 exports.createEquipment = async (req, res, next) => {
   try {
+    if (!req.file || !req.file.buffer) {
+      throw new Error("Image buffer not found");
+    }
+
+    const folderName = "equipment";
+
+    // Upload the image to Cloudinary
+    const cloudinaryResult = await uploadToCloudinary(
+      req.file.buffer,
+      folderName
+    );
+
+    const renterId = req.renter?.id;
+
+    if (!renterId) {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ error: "Renter ID not found" });
+    }
+
+    const renterProfile = await RenterProfile.findOne({
+      where: { renterId },
+    });
+
+    if (!renterProfile) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ error: "Renter profile not found" });
+    }
+
+    // Create Equipment in your database with the Cloudinary URL
     const equipment = await Equipment.create({
       ...req.body,
-      // renterId: req.user.id,
+      image: cloudinaryResult.secure_url,
+      renterProfileId: renterProfile.id, // Assign the ID of the found renter profile
     });
+
+    await renterProfile.addEquipment(equipment);
+
     res.status(StatusCodes.OK).json({ status: "success", equipment });
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
@@ -68,27 +68,40 @@ exports.getEquipmentById = async (req, res) => {
   }
 };
 
-exports.searchEquipment = async (req, res) => {
-  try {
-    const { name, availabilityStartDate, availabilityEndDate, location } =
-      req.query;
-    const equipments = await Equipment.findAll({
-      where: {
-        name: name ? name : undefined,
-        availabilityStartDate: availabilityStartDate
-          ? availabilityStartDate
-          : undefined,
-        availabilityEndDate: availabilityEndDate
-          ? availabilityEndDate
-          : undefined,
-        location: location ? location : undefined,
-      },
-    });
-    res.status(StatusCodes.OK).json({ equipments });
-  } catch (error) {
-    res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
-  }
-};
+// exports.getAllAvailableEquipments = async (req, res) => {
+//   try {
+//     const availableEquipments = await Equipment.findAll({
+//       where: {
+//         isBooked: false, // Fetch only available equipment
+//       },
+//     });
+//     res.status(StatusCodes.OK).json({ status: "success", availableEquipments });
+//   } catch (error) {
+//     res.status(StatusCodes.BAD_REQUEST).json({ errors: errors.array()[0].msg });
+//   }
+// };
+
+// exports.searchEquipment = async (req, res) => {
+//   try {
+//     const { name, availabilityStartDate, availabilityEndDate, location } =
+//       req.query;
+//     const equipments = await Equipment.findAll({
+//       where: {
+//         name: name ? name : undefined,
+//         availabilityStartDate: availabilityStartDate
+//           ? availabilityStartDate
+//           : undefined,
+//         availabilityEndDate: availabilityEndDate
+//           ? availabilityEndDate
+//           : undefined,
+//         location: location ? location : undefined,
+//       },
+//     });
+//     res.status(StatusCodes.OK).json({ equipments });
+//   } catch (error) {
+//     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
+//   }
+// };
 
 exports.searchEquipmentByLocation = async (req, res) => {
   try {

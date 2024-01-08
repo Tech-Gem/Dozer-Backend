@@ -1,5 +1,5 @@
-const { authenticate, authorize } = require("./authentication");
-const errorHandlerMiddleware = require("./errorHandler");
+const { authenticate, authorize } = require("./authentication.middlewares");
+const errorHandlerMiddleware = require("./errorHandler.middlewares");
 
 module.exports = {
   authenticate,

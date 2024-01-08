@@ -27,7 +27,14 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       jobTitle: DataTypes.STRING,
-      profilePicture: DataTypes.STRING,
+      image: DataTypes.STRING,
+      userId: {
+        type: DataTypes.UUID,
+        references: {
+          model: "users",
+          key: "id",
+        },
+      },
     },
     {
       sequelize,

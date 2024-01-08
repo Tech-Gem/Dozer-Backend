@@ -2,12 +2,12 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const httpStatus = require("http-status");
 const CustomError = require("../errors");
-const { User, UserProfile } = require("../models");
+const { User, RenterProfile } = require("../models");
 const { Op } = require("sequelize");
 
-const register = async (req, res, next) => {
+const renterRegistration = async (req, res, next) => {
   try {
-    const requiredFields = ["role", "email", "password", "phoneNumber"];
+    const requiredFields = ["email", "password"];
     const missingFields = [];
 
     requiredFields.forEach((field) => {
@@ -28,72 +28,68 @@ const register = async (req, res, next) => {
       });
     }
 
-    const { role, email, password, phoneNumber } = req.body;
+    const { email, password } = req.body;
 
     // Check if the user already exists with the provided email or phone number
-    const existingUser = await User.findOne({
+    const existingRenter = await User.findOne({
       where: {
-        [Op.or]: [{ email }, { phoneNumber }],
+        [Op.or]: [{ email }],
       },
     });
 
-    if (existingUser) {
+    if (existingRenter) {
       return res.status(httpStatus.BAD_REQUEST).json({
-        error: "User already exists with the provided email or phone number",
+        error: "User already exists with the provided email",
       });
     }
 
     // Create a new user if it doesn't exist
-    const newUser = await User.create({
-      role,
+    const newRenter = await User.create({
       email,
       password,
-      phoneNumber,
+      role: "renter",
     });
 
-    // Create UserProfile associated with the newly created User
-    const userProfile = await UserProfile.create({
-      firstName: req.body.firstName,
-      middleName: req.body.middleName,
-      lastName: req.body.lastName,
-      jobTitle: req.body.jobTitle,
-      profilePicture: req.body.profilePicture,
-      userId: newUser.id, // Link UserProfile to the newly created User
+    // Create renterProfile associated with the newly created User
+    const renterProfile = await RenterProfile.create({
+      renterId: newRenter.id, // Link renterProfile to the newly created User
     });
 
-    res.status(httpStatus.CREATED).json({ user: newUser, userProfile });
+    res
+      .status(httpStatus.CREATED)
+      .json({ status: "success", renter: newRenter, renterProfile });
   } catch (error) {
     next(error);
   }
 };
 
-const login = async (req, res, next) => {
+const renterLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    let user = await User.scope("withPassword").findOne({ where: { email } });
-    if (!user) {
+    let renter = await User.scope("withPassword").findOne({ where: { email } });
+    if (!renter) {
       throw new CustomError("Invalid credentials", httpStatus.UNAUTHORIZED);
     }
 
-    const isPasswordMatched = await bcrypt.compare(password, user.password);
+    const isPasswordMatched = await bcrypt.compare(password, renter.password);
     if (!isPasswordMatched) {
       throw new CustomError("Invalid credentials", httpStatus.UNAUTHORIZED);
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: renter.id }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 
-    user = user.toJSON();
-    delete user.password;
+    renter = renter.toJSON();
+    delete renter.password;
 
-    res.status(httpStatus.OK).json({ token, user });
+    res.status(httpStatus.OK).json({ status: "success", token, renter });
   } catch (error) {
     next(error);
   }
 };
 
 module.exports = {
-  register,
-  login,
+  renterRegistration,
+  renterLogin,
 };

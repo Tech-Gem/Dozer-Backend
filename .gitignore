@@ -105,6 +105,7 @@ dist
 
 
 src/config/*.json
+src/config/*.js
 public/equipment
 public/renter
 public/user/profile/*

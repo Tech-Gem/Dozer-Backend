@@ -1,15 +1,19 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class Renter extends Model {
+  class RenterProfile extends Model {
     static associate(models) {
-      Renter.hasMany(models.Equipment, {
-        foreignKey: "renterId",
+      RenterProfile.belongsTo(models.User, {
+        foreignKey: "renterId", // Adjust the foreign key according to your model definition
+        onDelete: "CASCADE",
+      });
+      RenterProfile.hasMany(models.Equipment, {
+        foreignKey: "renterProfileId", // Adjust the foreign key according to your model definition
         onDelete: "CASCADE",
       });
     }
   }
-  Renter.init(
+  RenterProfile.init(
     {
       id: {
         type: DataTypes.UUID,
@@ -25,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
           return `${this.firstName} ${this.middleName} ${this.lastName}`;
         },
       },
-      profilePicture: DataTypes.STRING,
+      image: DataTypes.STRING,
       company: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -35,17 +39,23 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: "",
       },
-      ownedEquipmentIds: {
-        type: DataTypes.ARRAY(DataTypes.UUID), // Assuming Equipment IDs are UUIDs
-        allowNull: true,
-        defaultValue: [],
+      isVerified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      renterId: {
+        type: DataTypes.UUID,
+        references: {
+          model: "users",
+          key: "id",
+        },
       },
     },
     {
       sequelize,
-      modelName: "Renter",
-      tableName: "renters",
+      modelName: "RenterProfile",
+      tableName: "renter_profiles",
     }
   );
-  return Renter;
+  return RenterProfile;
 };

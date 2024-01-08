@@ -2,17 +2,10 @@
 const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  const EquipmentCategory = {
-    CompactEquipment: "CompactEquipment",
-    HeavyEarthmoving: "HeavyEarthmoving",
-    LiftAerialWorkPlatform: "LiftAerialWorkPlatform",
-    RollersCompaction: "RollersCompaction",
-  };
-
   class Equipment extends Model {
     static associate(models) {
-      Equipment.belongsTo(models.Renter, {
-        foreignKey: "renterId",
+      Equipment.belongsTo(models.RenterProfile, {
+        foreignKey: "renterProfileId",
         onDelete: "CASCADE",
       });
     }
@@ -23,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
+        allowNull: false,
       },
       name: {
         type: DataTypes.STRING,
@@ -51,17 +45,18 @@ module.exports = (sequelize, DataTypes) => {
       },
       category: {
         type: DataTypes.ENUM(
-          EquipmentCategory.CompactEquipment,
-          EquipmentCategory.HeavyEarthmoving,
-          EquipmentCategory.LiftAerialWorkPlatform,
-          EquipmentCategory.RollersCompaction
+          "CompactEquipment",
+          "HeavyEarthmoving",
+          "LiftAerialWorkPlatform",
+          "RollersCompaction"
         ),
         allowNull: false,
-        defaultValue: EquipmentCategory.CompactEquipment,
+        defaultValue: "CompactEquipment",
       },
-      imageUrl: {
+      image: {
         type: DataTypes.STRING,
         allowNull: true,
+        defaultValue: "",
       },
       capacity: {
         type: DataTypes.STRING,
@@ -83,17 +78,13 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: false, // Assuming default transportation value is false
       },
-      availabilityStartDate: {
-        type: DataTypes.DATE,
-        allowNull: true, // Adjust allowNull as needed
-      },
-      availabilityEndDate: {
-        type: DataTypes.DATE,
-        allowNull: true, // Adjust allowNull as needed
-      },
-      renterId: {
-        type: DataTypes.INTEGER,
-        allowNull: true, // Adjust allowNull as needed
+      renterProfileId: {
+        type: DataTypes.UUID,
+        references: {
+          model: "renter_profiles",
+          key: "id",
+        },
+        onDelete: "CASCADE",
       },
     },
     {

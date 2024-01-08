@@ -2,7 +2,7 @@ const User = require("../models").User;
 const { StatusCodes } = require("http-status-codes");
 const { validationResult } = require("express-validator");
 
-exports.getUsers = async (req, res) => {
+exports.getRenters = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -11,25 +11,25 @@ exports.getUsers = async (req, res) => {
         .json({ errors: errors.array()[0].msg });
     }
 
-    const users = await User.findAll({
+    const renters = await User.findAll({
       where: {
-        role: "user", // Fetch users whose role is 'user'
+        role: "renter", // Fetch users whose role is 'user'
       },
     });
 
-    if (!users || users.length === 0) {
+    if (!renters || renters.length === 0) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .json({ message: "No users found" });
     }
 
-    const filteredUsers = users.filter(
-      (user) => user.email !== process.env.ADMIN_EMAIL
+    const filteredRenters = renters.filter(
+      (renter) => renter.email !== process.env.ADMIN_EMAIL
     );
 
     res
       .status(StatusCodes.OK)
-      .json({ status: "success", users: filteredUsers });
+      .json({ status: "success", users: filteredRenters });
   } catch (error) {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -37,7 +37,7 @@ exports.getUsers = async (req, res) => {
   }
 };
 
-exports.getUser = async (req, res) => {
+exports.getRenter = async (req, res) => {
   try {
     const { id } = req.params;
     const errors = validationResult(req);
@@ -47,14 +47,14 @@ exports.getUser = async (req, res) => {
         .json({ errors: errors.array()[0].msg });
     }
 
-    let user = await User.findOne({
+    let renter = await User.findOne({
       where: {
         id,
-        role: "user",
+        role: "renter",
       },
     });
 
-    if (!user) {
+    if (!renter) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ errors: "User not found" });
@@ -62,7 +62,7 @@ exports.getUser = async (req, res) => {
 
     return res.status(StatusCodes.OK).json({
       status: "success",
-      user,
+      renter,
     });
   } catch (error) {
     res
