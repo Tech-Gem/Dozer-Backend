@@ -11,6 +11,7 @@ module.exports = {
       },
       email: {
         type: Sequelize.STRING,
+        required: true,
         unique: true,
         validate: {
           isEmail: true,
@@ -18,13 +19,21 @@ module.exports = {
       },
       password: {
         type: Sequelize.STRING,
+        required: true,
       },
-      phoneNumber: Sequelize.STRING,
+      phoneNumber: {
+        type: Sequelize.STRING,
+        required: true,
+        unique: true,
+      },
       phoneNumberVerified: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
-      verificationId: Sequelize.STRING,
+      verificationId: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       role: {
         type: Sequelize.ENUM,
         values: ["admin", "user", "renter"],

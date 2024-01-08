@@ -8,6 +8,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "userId", // Adjust the foreign key according to your model definition
         onDelete: "CASCADE",
       });
+      User.hasOne(models.RenterProfile, {
+        foreignKey: "renterId", // Adjust the foreign key according to your model definition
+        onDelete: "CASCADE",
+      });
     }
   }
   User.init(

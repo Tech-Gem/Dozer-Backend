@@ -9,24 +9,21 @@ const {
   getAllEquipments,
   updateEquipment,
   deleteEquipment,
-  uploadImage,
 } = require("../controllers/equipment.controller");
-const { authenticate } = require("../middlewares/authentication");
-const {
-  addEquipmentValidation,
-} = require("../validations/equipment.validation");
+const { authenticate } = require("../middlewares/authentication.middlewares");
+const { multerUploads } = require("../middlewares/multer.middlewares");
 
 router
   .route("/")
-  .post(authenticate, uploadImage, addEquipmentValidation, createEquipment)
+  .post(authenticate, multerUploads, createEquipment)
   .get(authenticate, getAllEquipments);
-router.get("/search", addEquipmentValidation, searchEquipment);
+// router.get("/search", searchEquipment);
 router.get("/by-location/:location", searchEquipmentByLocation);
 router.get("/by-category/:category", searchEquipmentByCategory);
 router
   .route("/:id")
   .get(authenticate, getEquipmentById)
-  .patch(authenticate, uploadImage, updateEquipment)
+  .patch(authenticate, multerUploads, updateEquipment)
   .delete(authenticate, deleteEquipment);
 
 module.exports = router;

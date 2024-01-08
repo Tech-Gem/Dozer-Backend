@@ -1,4 +1,4 @@
-const { User } = require("../models");
+const { User, UserProfile, RenterProfile } = require("../models");
 const jwt = require("jsonwebtoken");
 const CustomError = require("../errors");
 const httpStatus = require("http-status");
@@ -6,15 +6,28 @@ const httpStatus = require("http-status");
 const authenticate = async (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    throw new CustomError("Authentication Invalid", httpStatus.UNAUTHORIZED);
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ error: "Authentication Invalid" });
   }
+
   const token = authHeader.split(" ")[1];
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findByPk(payload.id);
+    const user = await User.findByPk(payload.id);
+
+    if (!user) {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ error: "User not found" });
+    }
+
+    req.renter = { id: user.id }; // Set req.renter with the user ID
     next();
   } catch (error) {
-    throw new CustomError("Authentication invalid", httpStatus.UNAUTHORIZED);
+    return res
+      .status(StatusCodes.UNAUTHORIZED)
+      .json({ error: "Authentication invalid" });
   }
 };
 

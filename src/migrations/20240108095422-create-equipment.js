@@ -9,14 +9,6 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      renterId: {
-        type: Sequelize.UUID,
-        references: {
-          model: "renters",
-          key: "id",
-        },
-        onDelete: "CASCADE",
-      },
       name: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -52,7 +44,7 @@ module.exports = {
         allowNull: false,
         defaultValue: "CompactEquipment",
       },
-      imageUrl: {
+      image: {
         type: Sequelize.STRING,
         allowNull: false,
         defaultValue: "",
@@ -78,13 +70,13 @@ module.exports = {
         allowNull: false,
         defaultValue: false,
       },
-      availabilityStartDate: {
-        type: Sequelize.DATE,
-        allowNull: true,
-      },
-      availabilityEndDate: {
-        type: Sequelize.DATE,
-        allowNull: true, // Adjust allowNull as needed
+      renterProfileId: {
+        type: Sequelize.UUID,
+        references: {
+          model: "renter_profiles",
+          key: "id",
+        },
+        onDelete: "CASCADE",
       },
       createdAt: {
         allowNull: false,

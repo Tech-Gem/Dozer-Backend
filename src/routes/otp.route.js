@@ -4,7 +4,7 @@ const {
   sendSecurityCode,
   verifySecurityCode,
 } = require("../controllers/otp.controller");
-const { setUserPhoneNumber } = require("../middlewares/otp");
+const { setUserPhoneNumber } = require("../middlewares/otp.middlewares");
 
 const router = express.Router();
 

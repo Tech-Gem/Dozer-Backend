@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("user_profiles", {
+    await queryInterface.createTable("renter_profiles", {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -18,9 +18,21 @@ module.exports = {
           return `${this.firstName} ${this.middleName} ${this.lastName}`;
         },
       },
-      jobTitle: Sequelize.STRING,
-      profilePicture: Sequelize.STRING,
-      userId: {
+      image: Sequelize.STRING,
+      company: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      address: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: "",
+      },
+      isVerified: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      renterId: {
         type: Sequelize.UUID,
         references: {
           model: "users",
@@ -39,6 +51,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("user_profiles");
+    await queryInterface.dropTable("renter_profiles");
   },
 };
