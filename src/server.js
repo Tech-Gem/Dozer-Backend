@@ -13,6 +13,7 @@ const { StatusCodes } = require("http-status-codes");
 const routes = require("./routes");
 const compression = require("compression");
 const errorHandler = require("./middlewares/errorHandler.middlewares");
+const fs = require("fs");
 
 db.sequelize
   .authenticate()
@@ -44,7 +45,12 @@ app.use(
 app.use("/api/v1", routes);
 
 app.get("/", (req, res) => {
-  res.send("Welcome to Dozer API");
+  // Read the content of index.html
+  const indexPath = path.join(__dirname, "index.html");
+  const htmlContent = fs.readFileSync(indexPath, "utf-8");
+
+  // Send the HTML content as the response
+  res.send(htmlContent);
 });
 
 app.use("*", (req, res, next) => {
