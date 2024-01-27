@@ -16,7 +16,9 @@ exports.createEquipment = async (req, res, next) => {
       folderName
     );
 
-    const renterId = req.renter?.id;
+    console.log("Token Payload:", req.user);
+
+    const renterId = req.user.id;
 
     if (!renterId) {
       return res
