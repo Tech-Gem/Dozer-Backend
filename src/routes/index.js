@@ -7,6 +7,7 @@ const renterProfileRoutes = require("./renter.profile.route");
 const otpController = require("./otp.route");
 const equipmentRoutes = require("./equipment.route");
 const renterRoutes = require("./renter.route");
+const bookingRoutes = require("./booking.route");
 
 const router = express.Router();
 
@@ -18,5 +19,6 @@ router.use("/otp", otpController);
 router.use("/userProfile", userProfileRoutes);
 router.use("/renterProfile", renterProfileRoutes);
 router.use("/equipments", equipmentRoutes);
+router.use("/bookings", bookingRoutes);
 
 module.exports = router;
