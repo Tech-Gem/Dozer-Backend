@@ -8,15 +8,17 @@ const {
   searchEquipmentByCategory,
   getAllEquipments,
   updateEquipment,
+  getAllAvailableEquipments,
   deleteEquipment,
 } = require("../controllers/equipment.controller");
 const { authenticate } = require("../middlewares/authentication.middlewares");
 const { multerUploads } = require("../middlewares/multer.middlewares");
-
+// multerUploads;
 router
   .route("/")
-  .post(authenticate, multerUploads, createEquipment)
+  .post(authenticate, createEquipment)
   .get(authenticate, getAllEquipments);
+router.get("/available", authenticate, getAllAvailableEquipments);
 // router.get("/search", searchEquipment);
 router.get("/by-location/:location", searchEquipmentByLocation);
 router.get("/by-category/:category", searchEquipmentByCategory);

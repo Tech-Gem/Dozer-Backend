@@ -4,19 +4,19 @@ const { uploadToCloudinary } = require("../middlewares/multer.middlewares");
 
 exports.createEquipment = async (req, res, next) => {
   try {
-    if (!req.file) {
-      throw new Error("Image buffer not found");
-    }
+    // if (!req.file || !req.file.buffer) {
+    //   throw new Error("Image buffer not found");
+    // }
 
-    const folderName = "equipment";
+    // const folderName = "equipment";
 
     // Upload the image to Cloudinary
-    const cloudinaryResult = await uploadToCloudinary(
-      req.file.buffer,
-      folderName
-    );
+    // const cloudinaryResult = await uploadToCloudinary(
+    //   req.file.buffer,
+    //   folderName
+    // );
 
-    console.log("Token Payload:", req.user);
+    // console.log("Token Payload:", req.user);
 
     const renterId = req.user.id;
 
@@ -39,7 +39,7 @@ exports.createEquipment = async (req, res, next) => {
     // Create Equipment in your database with the Cloudinary URL
     const equipment = await Equipment.create({
       ...req.body,
-      image: cloudinaryResult.secure_url,
+      // image: cloudinaryResult.secure_url,
       renterProfileId: renterProfile.id, // Assign the ID of the found renter profile
     });
 
@@ -70,18 +70,18 @@ exports.getEquipmentById = async (req, res) => {
   }
 };
 
-// exports.getAllAvailableEquipments = async (req, res) => {
-//   try {
-//     const availableEquipments = await Equipment.findAll({
-//       where: {
-//         isBooked: false, // Fetch only available equipment
-//       },
-//     });
-//     res.status(StatusCodes.OK).json({ status: "success", availableEquipments });
-//   } catch (error) {
-//     res.status(StatusCodes.BAD_REQUEST).json({ errors: errors.array()[0].msg });
-//   }
-// };
+exports.getAllAvailableEquipments = async (req, res) => {
+  try {
+    const availableEquipments = await Equipment.findAll({
+      where: {
+        isBooked: false, // Fetch only available equipment
+      },
+    });
+    res.status(StatusCodes.OK).json({ status: "success", availableEquipments });
+  } catch (error) {
+    res.status(StatusCodes.BAD_REQUEST).json({ errors: errors.array()[0].msg });
+  }
+};
 
 // exports.searchEquipment = async (req, res) => {
 //   try {
