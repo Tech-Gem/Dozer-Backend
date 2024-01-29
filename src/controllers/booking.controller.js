@@ -10,6 +10,7 @@ exports.bookEquipment = async (req, res) => {
       startDate,
       endDate,
       quantity,
+      location,
       signature,
       termsAndConditions,
     } = req.body;
@@ -20,6 +21,11 @@ exports.bookEquipment = async (req, res) => {
       return res.status(404).json({ error: "Equipment not found" });
     }
 
+    // Check if the equipment is already booked
+    if (equipment.isBooked) {
+      return res.status(400).json({ error: "Equipment is already booked" });
+    }
+
     // Create booking
     const booking = await Booking.create({
       name,
@@ -27,15 +33,19 @@ exports.bookEquipment = async (req, res) => {
       startDate,
       endDate,
       quantity,
+      location,
       signature,
       termsAndConditions,
       equipmentId: equipment.id,
     });
 
+    // Update equipment's isBooked status to true
+    await Equipment.update({ isBooked: true }, { where: { id: equipment.id } });
+
     res.status(201).json({ message: "Booking successful", booking });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
 };
 

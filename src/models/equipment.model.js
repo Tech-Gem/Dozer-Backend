@@ -82,6 +82,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: false, // Assuming default transportation value is false
       },
+      isBooked: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
       renterProfileId: {
         type: DataTypes.UUID,
         references: {

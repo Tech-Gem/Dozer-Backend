@@ -70,6 +70,11 @@ module.exports = {
         allowNull: false,
         defaultValue: false,
       },
+      isBooked: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
       renterProfileId: {
         type: Sequelize.UUID,
         references: {
