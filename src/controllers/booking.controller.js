@@ -1,5 +1,6 @@
-const { Booking, Equipment } = require("../models");
+const { Booking, Equipment, RenterProfile } = require("../models");
 const { StatusCodes } = require("http-status-codes");
+const NotificationService = require("../config/serviceAccountKey.json");
 
 exports.bookEquipment = async (req, res) => {
   try {
@@ -16,7 +17,10 @@ exports.bookEquipment = async (req, res) => {
     } = req.body;
 
     // Check if equipment exists
-    const equipment = await Equipment.findByPk(equipmentId);
+    const equipment = await Equipment.findByPk(equipmentId, {
+      include: RenterProfile,
+    });
+
     if (!equipment) {
       return res.status(404).json({ error: "Equipment not found" });
     }
@@ -41,6 +45,14 @@ exports.bookEquipment = async (req, res) => {
 
     // Update equipment's isBooked status to true
     await Equipment.update({ isBooked: true }, { where: { id: equipment.id } });
+
+    // Send notification to the equipment owner (renter)
+    const ownerFCMToken = equipment.RenterProfile.fcmToken;
+    const notificationMessage = `A new booking has been confirmed for your equipment: ${equipment.name}`;
+    await NotificationService.sendNotification(
+      ownerFCMToken,
+      notificationMessage
+    );
 
     res.status(201).json({ message: "Booking successful", booking });
   } catch (error) {

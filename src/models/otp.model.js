@@ -1,15 +1,15 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-  class UserProfile extends Model {
+  class Otp extends Model {
     static associate(models) {
-      UserProfile.belongsTo(models.User, {
-        foreignKey: "userId", // Adjust the foreign key according to your model definition
+      Otp.belongsTo(models.User, {
+        foreignKey: "userId",
         onDelete: "CASCADE",
       });
     }
   }
-  UserProfile.init(
+  Otp.init(
     {
       id: {
         allowNull: false,
@@ -17,26 +17,37 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      fullName: DataTypes.STRING,
-      jobTitle: DataTypes.STRING,
-      verifiedRenter: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false, // Assuming renter verification is initially false
+      phoneNumber: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
       },
-      image: DataTypes.STRING,
+      phoneNumberVerified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      otpCode: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      verificationId: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       userId: {
         type: DataTypes.UUID,
         references: {
           model: "users",
           key: "id",
         },
+        onDelete: "CASCADE",
       },
     },
     {
       sequelize,
-      modelName: "UserProfile",
-      tableName: "user_profiles",
+      modelName: "Otp",
+      tableName: "otps",
     }
   );
-  return UserProfile;
+  return Otp;
 };

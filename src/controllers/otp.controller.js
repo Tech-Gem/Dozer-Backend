@@ -1,15 +1,15 @@
 const axios = require("axios");
-const { User } = require("../models");
+const { User, Otp } = require("../models");
 
 // Function to send the security code (OTP)
-exports.sendSecurityCode = async (req, res) => {
-  const phoneNumber = req.session.phoneNumber;
+exports.sendSecurityCode = async (phoneNumber) => {
+  // const phoneNumber = req.session.phoneNumber;
 
   try {
-    let user = await User.findOne({ where: { phoneNumber } });
+    let userOtp = await Otp.findOne({ where: { phoneNumber } });
 
-    if (!user) {
-      user = await User.create({ phoneNumber });
+    if (!userOtp) {
+      userOtp = await Otp.create({ phoneNumber });
     }
 
     const baseURL = "https://api.afromessage.com/api/challenge";
@@ -40,9 +40,14 @@ exports.sendSecurityCode = async (req, res) => {
 
     if (response.data.acknowledge === "success") {
       const receivedVerificationId = response.data.response.verificationId; // Extracting verificationId from the request body
+      const receivedOtpCode = response.data.response.code; // Extracting OTP code from the request body
 
       // Update the user with the verificationId
-      await user.update({ verificationId: receivedVerificationId });
+      await userOtp.update({
+        verificationId: receivedVerificationId,
+        otpCode: receivedOtpCode,
+        phoneNumberVerified: false,
+      });
       // Assuming the response contains the necessary information for successful sending
       res.status(200).json({
         message: "Security code sent successfully",
@@ -58,15 +63,15 @@ exports.sendSecurityCode = async (req, res) => {
 };
 
 // Function to verify the security code
-exports.verifySecurityCode = async (req, res) => {
-  const { code } = req.body;
+exports.verifySecurityCode = async (code) => {
+  // const { code } = req.body;
 
   try {
     const phoneNumber = req.session.phoneNumber;
 
-    const user = await User.findOne({ where: { phoneNumber } });
+    const userOtp = await Otp.findOne({ where: { phoneNumber } });
 
-    if (!user) {
+    if (!userOtp) {
       return res.status(404).json({ error: "User not found" });
     }
 
@@ -74,7 +79,7 @@ exports.verifySecurityCode = async (req, res) => {
     const token =
       "eyJhbGciOiJIUzI1NiJ9.eyJpZGVudGlmaWVyIjoicVJKRnFwU3RyaHYzYmdtMmt3MFg4M1NCWTFqRmtjY3YiLCJleHAiOjE4NjE5ODg2ODUsImlhdCI6MTcwNDEzNTg4NSwianRpIjoiNzljYTgyM2UtOGY2MS00YTU3LWI2Y2QtNDU5ZmQ2MTg4MDc4In0.rwaI7asbS0pYEgm5EENxYgP3RwKwZE0Vg4kEcvH_n5w";
     const to = phoneNumber; // Assuming phone number is sent in the request body
-    const { verificationId } = user; // Replace with received verificationId
+    const { verificationId } = userOtp; // Replace with received verificationId
     const verificationCode = code; // Assuming verification code is sent in the request body
 
     const url = `${baseURL}?to=${to}&vc=${verificationId}&code=${verificationCode}`;
@@ -87,7 +92,7 @@ exports.verifySecurityCode = async (req, res) => {
     const response = await axios.get(url, { headers });
 
     if (response.data.acknowledge === "success") {
-      await user.update({ phoneNumberVerified: true });
+      await userOtp.update({ phoneNumberVerified: true });
       // Assuming the verification is successful and response contains the verified details
       res.status(200).json({
         message: "Security code verified successfully",

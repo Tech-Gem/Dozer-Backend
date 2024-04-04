@@ -39,14 +39,6 @@ module.exports = (sequelize, DataTypes) => {
         required: true,
         unique: true,
       },
-      phoneNumberVerified: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-      },
-      verificationId: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
       role: {
         type: DataTypes.ENUM,
         values: ["admin", "user", "renter"],

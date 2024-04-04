@@ -2,24 +2,12 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("users", {
+    await queryInterface.createTable("otps", {
       id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
-      },
-      email: {
-        type: Sequelize.STRING,
-        required: true,
-        unique: true,
-        validate: {
-          isEmail: true,
-        },
-      },
-      password: {
-        type: Sequelize.STRING,
-        required: true,
       },
       phoneNumber: {
         type: Sequelize.STRING,
@@ -30,14 +18,21 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
+      otpCode: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       verificationId: {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      role: {
-        type: Sequelize.ENUM,
-        values: ["admin", "user", "renter"],
-        defaultValue: "user",
+      userId: {
+        type: Sequelize.UUID,
+        references: {
+          model: "users",
+          key: "id",
+        },
+        onDelete: "CASCADE",
       },
       createdAt: {
         allowNull: false,
@@ -50,6 +45,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("users");
+    await queryInterface.dropTable("otps");
   },
 };
