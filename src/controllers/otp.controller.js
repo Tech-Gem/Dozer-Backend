@@ -1,9 +1,8 @@
 const axios = require("axios");
 const { User, Otp } = require("../models");
 
-// Function to send the security code (OTP)
-exports.sendSecurityCode = async (phoneNumber) => {
-  // const phoneNumber = req.session.phoneNumber;
+exports.sendSecurityCode = async (req, res, next) => {
+  const phoneNumber = req.session.phoneNumber;
 
   try {
     let userOtp = await Otp.findOne({ where: { phoneNumber } });
@@ -63,8 +62,8 @@ exports.sendSecurityCode = async (phoneNumber) => {
 };
 
 // Function to verify the security code
-exports.verifySecurityCode = async (code) => {
-  // const { code } = req.body;
+exports.verifySecurityCode = async (req, res, next) => {
+  const { code } = req.body;
 
   try {
     const phoneNumber = req.session.phoneNumber;

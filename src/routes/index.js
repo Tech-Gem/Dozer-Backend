@@ -10,6 +10,7 @@ const renterRoutes = require("./renter.route");
 const bookingRoutes = require("./booking.route");
 const admin = require("./admin.route");
 const forgetPassword = require("./forget.password.route");
+const notificationRoutes = require("./notification.route");
 
 const router = express.Router();
 
@@ -24,5 +25,6 @@ router.use("/userProfile", userProfileRoutes);
 router.use("/renterProfile", renterProfileRoutes);
 router.use("/equipments", equipmentRoutes);
 router.use("/bookings", bookingRoutes);
+router.use("/notification", notificationRoutes);
 
 module.exports = router;

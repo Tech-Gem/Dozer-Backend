@@ -4,12 +4,11 @@ const httpStatus = require("http-status");
 const CustomError = require("../errors");
 const { User, UserProfile, Otp } = require("../models");
 const { Op } = require("sequelize");
-const {sendSecurityCode, verifySecurityCode} = require("./otp.controller");
 
-const userRegistration = async (req, res) => {
-  const { email, password, phoneNumber, fullName, code } = req.body;
-
+const userRegistration = async (req, res, next) => {
   try {
+    const { email, password, phoneNumber, fullName } = req.body;
+
     // Check if all required fields are provided
     if (!email || !password || !phoneNumber || !fullName) {
       return res.status(400).json({ error: "All fields are required" });
@@ -28,14 +27,14 @@ const userRegistration = async (req, res) => {
       });
     }
 
-    // Send OTP to user's phone number
-    await sendSecurityCode(phoneNumber);
+    //check from Otp if the phoneNumberVerified is true
+    const userOtp = await Otp.findOne({ where: { phoneNumber } });
+    if (!userOtp) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-    // Verify OTP
-    const otpVerified = await verifySecurityCode(code);
-
-    if (!otpVerified) {
-      return res.status(400).json({ error: "Invalid OTP" });
+    if (userOtp.phoneNumberVerified === false) {
+      return res.status(400).json({ error: "Authentication Failed " });
     }
 
     // Proceed with the registration process
@@ -52,6 +51,7 @@ const userRegistration = async (req, res) => {
       fullName,
     });
 
+    await userOtp.update({ userId: newUser.id });
     const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
@@ -63,11 +63,9 @@ const userRegistration = async (req, res) => {
       userProfile,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to register user" });
+    next(error);
   }
 };
-
 
 const userLogin = async (req, res, next) => {
   try {

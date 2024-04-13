@@ -1,6 +1,5 @@
 const { Booking, Equipment, RenterProfile } = require("../models");
 const { StatusCodes } = require("http-status-codes");
-const NotificationService = require("../config/serviceAccountKey.json");
 
 exports.bookEquipment = async (req, res) => {
   try {

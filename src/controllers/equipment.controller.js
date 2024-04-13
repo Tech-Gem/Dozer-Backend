@@ -1,4 +1,4 @@
-const { Equipment, RenterProfile } = require("../models");
+const { Equipment } = require("../models");
 const { StatusCodes } = require("http-status-codes");
 const { uploadToCloudinary } = require("../middlewares/multer.middlewares");
 
@@ -18,32 +18,22 @@ exports.createEquipment = async (req, res, next) => {
 
     // console.log("Token Payload:", req.user);
 
-    const renterId = req.user.id;
+    const user = req.user;
 
-    if (!renterId) {
+    if (!user) {
       return res
         .status(StatusCodes.UNAUTHORIZED)
-        .json({ error: "Renter ID not found" });
-    }
-
-    const renterProfile = await RenterProfile.findOne({
-      where: { renterId },
-    });
-
-    if (!renterProfile) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ error: "Renter profile not found" });
+        .json({ error: "User not found" });
     }
 
     // Create Equipment in your database with the Cloudinary URL
     const equipment = await Equipment.create({
       ...req.body,
       // image: cloudinaryResult.secure_url,
-      renterProfileId: renterProfile.id, // Assign the ID of the found renter profile
+      userId: user.id, // Assign the ID of the found renter profile
     });
 
-    await renterProfile.addEquipment(equipment);
+    // await user.addEquipment(equipment);
 
     res.status(StatusCodes.OK).json({ status: "success", equipment });
   } catch (error) {

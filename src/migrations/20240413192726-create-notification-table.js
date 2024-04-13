@@ -2,37 +2,33 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("renter_profiles", {
+    await queryInterface.createTable("notifications", {
       id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      firstName: Sequelize.STRING,
-      middleName: Sequelize.STRING,
-      lastName: Sequelize.STRING,
-      fullName: {
-        type: Sequelize.STRING,
-        get() {
-          return `${this.firstName} ${this.middleName} ${this.lastName}`;
-        },
-      },
-      image: Sequelize.STRING,
-      company: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      address: {
+      message: {
         type: Sequelize.STRING,
         allowNull: false,
         defaultValue: "",
       },
-      isVerified: {
+      type: {
+        type: Sequelize.ENUM("info", "warning", "error"),
+        allowNull: false,
+        defaultValue: "info",
+      },
+      isRead: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
-      renterId: {
+      timestamp: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
+      },
+      userId: {
         type: Sequelize.UUID,
         references: {
           model: "users",
@@ -51,6 +47,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("renter_profiles");
+    await queryInterface.dropTable("notifications");
   },
 };
