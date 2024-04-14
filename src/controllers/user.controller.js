@@ -50,7 +50,6 @@ exports.getUser = async (req, res) => {
     let user = await User.findOne({
       where: {
         id,
-        role: "user",
       },
     });
 
@@ -64,6 +63,35 @@ exports.getUser = async (req, res) => {
       status: "success",
       user,
     });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
+exports.getRenters = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ errors: errors.array()[0].msg });
+    }
+
+    const users = await User.findAll({
+      where: {
+        role: "renter", // Fetch users whose role is 'renter'
+      },
+    });
+
+    if (!users || users.length === 0) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "No renters found" });
+    }
+
+    res.status(StatusCodes.OK).json({ status: "success", users });
   } catch (error) {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
