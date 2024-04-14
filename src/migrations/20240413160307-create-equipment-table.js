@@ -45,11 +45,10 @@ module.exports = {
         defaultValue: "CompactEquipment",
       },
       image: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        defaultValue: "",
+        type: Sequelize.ARRAY(Sequelize.STRING), // Using ARRAY for list of strings
+        allowNull: true,
+        defaultValue: [],
       },
-
       capacity: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -75,10 +74,10 @@ module.exports = {
         allowNull: false,
         defaultValue: false,
       },
-      renterProfileId: {
+      userId: {
         type: Sequelize.UUID,
         references: {
-          model: "renter_profiles",
+          model: "users",
           key: "id",
         },
         onDelete: "CASCADE",

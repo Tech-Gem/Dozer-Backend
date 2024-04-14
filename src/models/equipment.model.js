@@ -4,8 +4,8 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Equipment extends Model {
     static associate(models) {
-      Equipment.belongsTo(models.RenterProfile, {
-        foreignKey: "renterProfileId",
+      Equipment.belongsTo(models.User, {
+        foreignKey: "userId", // Adjust the foreign key according to your model definition
         onDelete: "CASCADE",
       });
       Equipment.hasMany(models.Booking, {
@@ -58,9 +58,9 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: "CompactEquipment",
       },
       image: {
-        type: DataTypes.STRING,
+        type: DataTypes.ARRAY(DataTypes.STRING), // Using ARRAY for list of strings
         allowNull: true,
-        defaultValue: "",
+        defaultValue: [],
       },
       capacity: {
         type: DataTypes.STRING,
@@ -87,13 +87,12 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: false,
       },
-      renterProfileId: {
+      userId: {
         type: DataTypes.UUID,
         references: {
-          model: "renter_profiles",
+          model: "users",
           key: "id",
         },
-        onDelete: "CASCADE",
       },
     },
     {
