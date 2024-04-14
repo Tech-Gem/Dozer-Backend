@@ -1,6 +1,6 @@
 var admin = require("firebase-admin");
 
-var serviceAccount = require("./config/dozerAccountKey.json");
+var serviceAccount = require("./dozerAccountKey.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
