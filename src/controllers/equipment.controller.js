@@ -42,7 +42,17 @@ exports.createEquipment = async (req, res, next) => {
 
     // Create Equipment in your database with the Cloudinary URL
     const equipment = await Equipment.create({
-      ...req.body,
+      name,
+      quantity,
+      pricePerHour,
+      location,
+      description,
+      category,
+      image,
+      capacity,
+      model,
+      specifications,
+      transportation,
       // image: cloudinaryResult.secure_url,
       userId: user.id, // Assign the ID of the found renter profile
     });
