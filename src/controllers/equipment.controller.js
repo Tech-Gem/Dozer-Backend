@@ -4,6 +4,20 @@ const { uploadToCloudinary } = require("../middlewares/multer.middlewares");
 
 exports.createEquipment = async (req, res, next) => {
   try {
+    const {
+      name,
+      quantity,
+      pricePerHour,
+      location,
+      description,
+      category,
+      image,
+      capacity,
+      model,
+      specifications,
+      transportation,
+    } = req.body;
+
     // if (!req.file || !req.file.buffer) {
     //   throw new Error("Image buffer not found");
     // }

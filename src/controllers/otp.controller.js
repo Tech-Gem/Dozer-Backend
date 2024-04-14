@@ -63,10 +63,10 @@ exports.sendSecurityCode = async (req, res, next) => {
 
 // Function to verify the security code
 exports.verifySecurityCode = async (req, res, next) => {
-  const { code } = req.body;
+  const { code, phoneNumber } = req.body;
 
   try {
-    const phoneNumber = req.session.phoneNumber;
+    // const phoneNumber = req.session.phoneNumber;
 
     const userOtp = await Otp.findOne({ where: { phoneNumber } });
 

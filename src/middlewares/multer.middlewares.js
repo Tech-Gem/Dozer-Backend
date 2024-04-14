@@ -1,6 +1,6 @@
 const multer = require("multer");
 const streamifier = require("streamifier");
-const cloudinary = require("../cloudinaryConfig");
+const cloudinary = require("../config/cloudinaryConfig");
 
 const storage = multer.memoryStorage();
 const multerUploads = multer({ storage }).single("image");

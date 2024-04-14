@@ -6,7 +6,7 @@ const Sequelize = require("sequelize");
 const process = require("process");
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
-const config = require("../config.json")[env];
+const config = require("../config/config.json")[env];
 const db = {};
 
 let sequelize;
@@ -48,3 +48,40 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 module.exports = db;
+
+
+
+exports.getUsers = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ errors: errors.array()[0].msg });
+    }
+
+    const users = await User.findAll({
+      where: {
+        role: "user", // Fetch users whose role is 'user'
+      },
+    });
+
+    if (!users || users.length === 0) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "No users found" });
+    }
+
+    const filteredUsers = users.filter(
+      (user) => user.email !== process.env.ADMIN_EMAIL
+    );
+
+    res
+      .status(StatusCodes.OK)
+      .json({ status: "success", users: filteredUsers });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
