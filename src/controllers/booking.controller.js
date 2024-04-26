@@ -124,6 +124,7 @@ export const verifyPayment = async (req, res) => {
     if (hash == req.headers["x-chapa-signature"]) {
       // Retrieve the request's body
       const event = req.body;
+      res.send(200);
 
       const { tx_ref, status } = event;
       if (status == "success" && tx_ref) {
