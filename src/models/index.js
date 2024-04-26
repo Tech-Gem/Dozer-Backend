@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import Sequelize from "sequelize";
 import process from "process";
-import dbConfig from "../config/config.json" assert { type: "json" };
+import dbConfig from "../config.json" assert { type: "json" };
 import { validationResult } from "express-validator";
 import { StatusCodes } from "http-status-codes";
 
