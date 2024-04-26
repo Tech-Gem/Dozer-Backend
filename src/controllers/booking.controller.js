@@ -115,73 +115,56 @@ export const createBooking = async (req, res) => {
 
 export const verifyPayment = async (req, res) => {
   try {
-    // Validate secret hash
+    //validate that this was indeed sent by Chapa's server
+    // this is where we use the Secret hash we saved in .env
     const hash = crypto
       .createHmac("sha256", process.env.CHAPA_WEBHOOK_SECRET)
       .update(JSON.stringify(req.body))
       .digest("hex");
-    console.log(req.headers["Chapa-Signature"]);
-    console.log(hash);
-
-    if (hash == req.headers["Chapa-Signature"]) {
-      console.log("Valid Chapa signature");
-
+    if (hash == req.headers["x-chapa-signature"]) {
       // Retrieve the request's body
       const event = req.body;
 
       const { tx_ref, status } = event;
       if (status == "success" && tx_ref) {
-        console.log("Transaction successful with tx_ref:", tx_ref);
-
-        // Verify transaction with Chapa API
+        // hit the verify endpoint to make sure a transaction with the given
+        // tx_ref was successful
         const response = await axios.get(
           `https://api.chapa.co/v1/transaction/verify/${tx_ref}`,
+
           {
             headers: {
               Authorization: "Bearer " + process.env.CHAPA_KEY,
             },
           }
         );
-        console.log(
-          "Chapa verification response:",
-          response.status,
-          response.data
-        );
         if (response.status == 200) {
+          // if successful find the book
           if (response.data["status"] == "success") {
             let tx_ref = response.data["data"]["tx_ref"];
             const book = await Booking.findOne({
               txRef: tx_ref,
             });
-
-            // Check for existing or non-pending order
+            // check if the book doesn't exist or payment status is not pending
             if (!book || book.paymentStatus != "pending") {
-              console.log("Order not found or payment already completed");
-              return res.sendStatus(200); // Acknowledge receipt
+              // Return a response to acknowledge receipt of the event
+              return res.sendStatus(200);
             }
-
-            // Update payment status if pending
+            // change payment status to completed
             if (book.paymentStatus == "pending") {
               book.paymentStatus = "completed";
               await book.save();
-              console.log("Payment status updated to completed");
-              return res.sendStatus(200); // Acknowledge receipt
+              // Return a response to acknowledge receipt of the event
+              return res.sendStatus(200);
             }
           }
         }
       }
-    } else {
-      console.log("Invalid Chapa signature");
     }
   } catch (err) {
-    console.error("Error processing payment verification:", err.message);
     return res.status(500).json({ msg: err.message });
   }
-
-  // No response sent if execution reaches here (all successful cases handled)
-  console.log("Payment verification completed successfully");
 };
-
 export const getAllBookings = async (req, res) => {
   try {
     const bookings = await Booking.findAll();
