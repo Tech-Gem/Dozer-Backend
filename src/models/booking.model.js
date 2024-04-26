@@ -1,11 +1,14 @@
-"use strict";
-const { Model } = require("sequelize");
+import { Model } from "sequelize";
 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   class Booking extends Model {
     static associate(models) {
       Booking.belongsTo(models.Equipment, {
         foreignKey: "equipmentId",
+        onDelete: "CASCADE",
+      });
+      Booking.belongsTo(models.User, {
+        foreignKey: "userId",
         onDelete: "CASCADE",
       });
     }
@@ -18,7 +21,22 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         allowNull: false,
       },
-      name: {
+      equipmentName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        required: true,
+      },
+      equipmentPrice: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+        defaultValue: 0.0,
+      },
+      firstName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        required: true,
+      },
+      lastName: {
         type: DataTypes.STRING,
         allowNull: false,
         required: true,
@@ -57,20 +75,27 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         required: true,
       },
-      status: {
+      txRef: {
+        type: DataTypes.STRING,
+        required: true,
+      },
+      paymentStatus: {
         type: DataTypes.ENUM("Pending", "Approved", "Rejected"),
         allowNull: false,
         defaultValue: "Pending",
-      },
-      paymentMethods: {
-        type: DataTypes.ENUM("TeleBirr", "Chapa", "Cash"),
-        allowNull: false,
-        defaultValue: "Cash",
       },
       equipmentId: {
         type: DataTypes.UUID,
         references: {
           model: "equipments",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+      },
+      userId: {
+        type: DataTypes.UUID,
+        references: {
+          model: "users",
           key: "id",
         },
         onDelete: "CASCADE",

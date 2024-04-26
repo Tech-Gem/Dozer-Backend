@@ -2091,6 +2091,18 @@ es6-iterator@^2.0.3:
     es5-ext "^0.10.35"
     es6-symbol "^3.1.1"
 
+es6-promise-promise@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/es6-promise-promise/-/es6-promise-promise-1.0.0.tgz"
+  integrity sha512-+Y7JJ8d0QIvQyLLmCULjUGPTg1CctpyEIMtGS+AE/xx9Rr0iqJi3heJYYRSucwOp7ngAAOi/GMKakAIAP79qRQ==
+  dependencies:
+    es6-promise "^3.2.1"
+
+es6-promise@^3.2.1:
+  version "3.3.1"
+  resolved "https://registry.npmjs.org/es6-promise/-/es6-promise-3.3.1.tgz"
+  integrity sha512-SOp9Phqvqn7jtEUxPWdWfWoLmyt2VaJ6MpvP9Comy1MceMXqE6bxvaTu4iaxpYYPzhny28Lc+M87/c2cPK6lDg==
+
 es6-symbol@^3.1.1, es6-symbol@^3.1.3:
   version "3.1.3"
   resolved "https://registry.npmjs.org/es6-symbol/-/es6-symbol-3.1.3.tgz"

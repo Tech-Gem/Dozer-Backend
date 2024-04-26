@@ -1,11 +1,9 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const {
-  sendBookingRequest,
-} = require("../controllers/notification.controller");
+import { sendBookingRequest } from "../controllers/notification.controller.js";
 
 // POST send message
 router.route("/send-message").post(sendBookingRequest);
 
-module.exports = router;
+export default router;

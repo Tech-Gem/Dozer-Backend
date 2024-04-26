@@ -1,4 +1,4 @@
-const moment = require("moment");
+import moment from "moment";
 
 const validateAndParseDate = (date) => {
   if (!moment(date, "YYYY-MM-DD", true).isValid()) {
@@ -7,6 +7,4 @@ const validateAndParseDate = (date) => {
   return moment(date).format("YYYY-MM-DD");
 };
 
-module.exports = {
-  validateAndParseDate,
-};
+export { validateAndParseDate };

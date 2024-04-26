@@ -1,8 +1,8 @@
-const express = require("express");
-const router = express.Router();
+// const express = require("express");
+// const router = express.Router();
 
-const { verifyRenter } = require("../controllers/admin.controller");
+// const { verifyRenter } = require("../controllers/admin.controller");
 
-router.patch("/verify/:renterId", verifyRenter);
+// router.patch("/verify/:renterId", verifyRenter);
 
-module.exports = router;
+// module.exports = router;

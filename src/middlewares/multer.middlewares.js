@@ -1,6 +1,6 @@
-const multer = require("multer");
-const streamifier = require("streamifier");
-const cloudinary = require("../cloudinaryConfig");
+import multer from "multer";
+import streamifier from "streamifier";
+import cloudinary from "../cloudinaryConfig.js";
 
 const storage = multer.memoryStorage();
 const multerUploads = multer({ storage }).single("image");
@@ -20,7 +20,4 @@ const uploadToCloudinary = (buffer, folderName) => {
   });
 };
 
-module.exports = {
-  multerUploads,
-  uploadToCloudinary,
-};
+export { multerUploads, uploadToCloudinary };

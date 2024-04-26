@@ -1,6 +1,6 @@
-"use strict";
-/** @type {import('sequelize-cli').Migration} */
-module.exports = {
+import("sequelize-cli").Migration;
+
+export default {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("bookings", {
       id: {
@@ -9,7 +9,22 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      name: {
+      equipmentName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        required: true,
+      },
+      equipmentPrice: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false,
+        defaultValue: 0.0,
+      },
+      firstName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        required: true,
+      },
+      lastName: {
         type: Sequelize.STRING,
         allowNull: false,
         required: true,
@@ -48,20 +63,28 @@ module.exports = {
         allowNull: false,
         required: true,
       },
-      status: {
+      txRef: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        required: true,
+      },
+      paymentStatus: {
         type: Sequelize.ENUM("Pending", "Approved", "Rejected"),
         allowNull: false,
         defaultValue: "Pending",
-      },
-      paymentMethods: {
-        type: Sequelize.ENUM("TeleBirr", "Chapa", "Cash"),
-        allowNull: false,
-        defaultValue: "Cash",
       },
       equipmentId: {
         type: Sequelize.UUID,
         references: {
           model: "equipments",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+      },
+      userId: {
+        type: Sequelize.UUID,
+        references: {
+          model: "users",
           key: "id",
         },
         onDelete: "CASCADE",

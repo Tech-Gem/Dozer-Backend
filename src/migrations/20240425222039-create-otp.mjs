@@ -1,21 +1,31 @@
-"use strict";
-/** @type {import('sequelize-cli').Migration} */
-module.exports = {
+import("sequelize-cli").Migration;
+
+export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("user_profiles", {
+    await queryInterface.createTable("otps", {
       id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      fullName: Sequelize.STRING,
-      jobTitle: Sequelize.STRING,
-      verifiedRenter: {
+      phoneNumber: {
+        type: Sequelize.STRING,
+        required: true,
+        unique: true,
+      },
+      phoneNumberVerified: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
-      image: Sequelize.STRING,
+      otpCode: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      verificationId: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       userId: {
         type: Sequelize.UUID,
         references: {
@@ -35,6 +45,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("user_profiles");
+    await queryInterface.dropTable("otps");
   },
 };

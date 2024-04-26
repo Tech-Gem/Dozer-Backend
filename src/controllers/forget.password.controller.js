@@ -1,8 +1,8 @@
-const bcrypt = require("bcrypt");
-const { User, Otp } = require("../models");
-const { sendSecurityCode, verifySecurityCode } = require("./otp.controller"); // Import OTP related functions
+import bcrypt from "bcrypt";
+import { User, Otp } from "../models/index.js"; // Assuming index.js exports both User and Otp models
+import { sendSecurityCode, verifySecurityCode } from "./otp.controller.js"; // Import OTP related functions
 
-exports.resetPassword = async (req, res) => {
+export const resetPassword = async (req, res) => {
   try {
     const { phoneNumber, newPassword } = req.body;
 
@@ -13,13 +13,13 @@ exports.resetPassword = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // check if the phone number is verified
+    // Check if the phone number is verified
     if (!userOtp.phoneNumberVerified) {
       return res.status(400).json({ error: "Failed to Authenticate" });
     }
 
     // OTP verification successful, reset the password
-    await user.update({ password: newPassword });
+    await user.update({ password: await bcrypt.hash(newPassword, 10) });
 
     res.status(200).json({ message: "Password reset successful" });
   } catch (error) {

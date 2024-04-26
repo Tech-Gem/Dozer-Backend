@@ -1,8 +1,8 @@
-const { Equipment } = require("../models");
-const { StatusCodes } = require("http-status-codes");
-const { uploadToCloudinary } = require("../middlewares/multer.middlewares");
+import { Equipment } from "../models/index.js";
+import { StatusCodes } from "http-status-codes";
+import { uploadToCloudinary } from "../middlewares/multer.middlewares.js";
 
-exports.createEquipment = async (req, res, next) => {
+export const createEquipment = async (req, res, next) => {
   try {
     const {
       name,
@@ -18,20 +18,6 @@ exports.createEquipment = async (req, res, next) => {
       transportation,
     } = req.body;
 
-    // if (!req.file || !req.file.buffer) {
-    //   throw new Error("Image buffer not found");
-    // }
-
-    // const folderName = "equipment";
-
-    // Upload the image to Cloudinary
-    // const cloudinaryResult = await uploadToCloudinary(
-    //   req.file.buffer,
-    //   folderName
-    // );
-
-    // console.log("Token Payload:", req.user);
-
     const user = req.user;
 
     if (!user) {
@@ -40,7 +26,6 @@ exports.createEquipment = async (req, res, next) => {
         .json({ error: "User not found" });
     }
 
-    // Create Equipment in your database with the Cloudinary URL
     const equipment = await Equipment.create({
       name,
       quantity,
@@ -53,11 +38,8 @@ exports.createEquipment = async (req, res, next) => {
       model,
       specifications,
       transportation,
-      // image: cloudinaryResult.secure_url,
-      userId: user.id, // Assign the ID of the found renter profile
+      userId: user.id,
     });
-
-    // await user.addEquipment(equipment);
 
     res.status(StatusCodes.OK).json({ status: "success", equipment });
   } catch (error) {
@@ -65,7 +47,7 @@ exports.createEquipment = async (req, res, next) => {
   }
 };
 
-exports.getAllEquipments = async (req, res) => {
+export const getAllEquipments = async (req, res) => {
   try {
     const equipments = await Equipment.findAll();
     res.status(StatusCodes.OK).json({ status: "success", equipments });
@@ -74,7 +56,7 @@ exports.getAllEquipments = async (req, res) => {
   }
 };
 
-exports.getEquipmentById = async (req, res) => {
+export const getEquipmentById = async (req, res) => {
   try {
     const { id } = req.params;
     const equipment = await Equipment.findByPk(id);
@@ -84,11 +66,11 @@ exports.getEquipmentById = async (req, res) => {
   }
 };
 
-exports.getAllAvailableEquipments = async (req, res) => {
+export const getAllAvailableEquipments = async (req, res) => {
   try {
     const availableEquipments = await Equipment.findAll({
       where: {
-        isBooked: false, // Fetch only available equipment
+        isBooked: false,
       },
     });
     res.status(StatusCodes.OK).json({ status: "success", availableEquipments });
@@ -97,29 +79,7 @@ exports.getAllAvailableEquipments = async (req, res) => {
   }
 };
 
-// exports.searchEquipment = async (req, res) => {
-//   try {
-//     const { name, availabilityStartDate, availabilityEndDate, location } =
-//       req.query;
-//     const equipments = await Equipment.findAll({
-//       where: {
-//         name: name ? name : undefined,
-//         availabilityStartDate: availabilityStartDate
-//           ? availabilityStartDate
-//           : undefined,
-//         availabilityEndDate: availabilityEndDate
-//           ? availabilityEndDate
-//           : undefined,
-//         location: location ? location : undefined,
-//       },
-//     });
-//     res.status(StatusCodes.OK).json({ equipments });
-//   } catch (error) {
-//     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
-//   }
-// };
-
-exports.searchEquipmentByLocation = async (req, res) => {
+export const searchEquipmentByLocation = async (req, res) => {
   try {
     const location = req.params.location;
     const equipments = await Equipment.findAll({
@@ -131,10 +91,9 @@ exports.searchEquipmentByLocation = async (req, res) => {
   }
 };
 
-exports.searchEquipmentByCategory = async (req, res) => {
+export const searchEquipmentByCategory = async (req, res) => {
   try {
     const category = req.params.category;
-    console.log("category", category);
     const equipments = await Equipment.findAll({
       where: { category },
     });
@@ -144,7 +103,7 @@ exports.searchEquipmentByCategory = async (req, res) => {
   }
 };
 
-exports.updateEquipment = async (req, res) => {
+export const updateEquipment = async (req, res) => {
   try {
     const { id } = req.params;
     const [updated] = await Equipment.update(req.body, {
@@ -162,7 +121,7 @@ exports.updateEquipment = async (req, res) => {
   }
 };
 
-exports.deleteEquipment = async (req, res) => {
+export const deleteEquipment = async (req, res) => {
   try {
     const { id } = req.params;
     const deleted = await Equipment.destroy({

@@ -1,23 +1,23 @@
-"use strict";
-const { Model } = require("sequelize");
-const bcrypt = require("bcrypt");
-module.exports = (sequelize, DataTypes) => {
+import { Model } from "sequelize";
+import bcrypt from "bcrypt";
+
+export default (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       User.hasOne(models.UserProfile, {
-        foreignKey: "userId", // Adjust the foreign key according to your model definition
+        foreignKey: "userId",
         onDelete: "CASCADE",
       });
       User.hasMany(models.Notification, {
-        foreignKey: "userId", // Adjust the foreign key according to your model definition
+        foreignKey: "userId",
         onDelete: "CASCADE",
       });
       User.hasMany(models.Booking, {
-        foreignKey: "userId", // Adjust the foreign key according to your model definition
+        foreignKey: "userId",
         onDelete: "CASCADE",
       });
       User.hasMany(models.Equipment, {
-        foreignKey: "userId", // Adjust the foreign key according to your model definition
+        foreignKey: "userId",
         onDelete: "CASCADE",
       });
     }

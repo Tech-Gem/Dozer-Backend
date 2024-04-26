@@ -1,10 +1,10 @@
-"use strict";
-const { Model } = require("sequelize");
-module.exports = (sequelize, DataTypes) => {
+import { Model } from "sequelize";
+
+export default (sequelize, DataTypes) => {
   class UserProfile extends Model {
     static associate(models) {
       UserProfile.belongsTo(models.User, {
-        foreignKey: "userId", // Adjust the foreign key according to your model definition
+        foreignKey: "userId",
         onDelete: "CASCADE",
       });
     }
@@ -17,11 +17,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
-      fullName: DataTypes.STRING,
+      firstName: DataTypes.STRING,
+      lastName: DataTypes.STRING,
       jobTitle: DataTypes.STRING,
       verifiedRenter: {
         type: DataTypes.BOOLEAN,
-        defaultValue: false, // Assuming renter verification is initially false
+        defaultValue: false,
       },
       image: DataTypes.STRING,
       userId: {

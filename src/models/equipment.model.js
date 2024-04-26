@@ -1,15 +1,14 @@
-"use strict";
-const { Model } = require("sequelize");
+import { Model } from "sequelize";
 
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   class Equipment extends Model {
     static associate(models) {
       Equipment.belongsTo(models.User, {
-        foreignKey: "userId", // Adjust the foreign key according to your model definition
+        foreignKey: "userId",
         onDelete: "CASCADE",
       });
       Equipment.hasMany(models.Booking, {
-        foreignKey: "equipmentId", // Adjust the foreign key according to your model definition
+        foreignKey: "equipmentId",
         onDelete: "CASCADE",
       });
     }
@@ -58,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: "CompactEquipment",
       },
       image: {
-        type: DataTypes.ARRAY(DataTypes.STRING), // Using ARRAY for list of strings
+        type: DataTypes.ARRAY(DataTypes.STRING),
         allowNull: true,
         defaultValue: [],
       },
@@ -73,14 +72,14 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: "",
       },
       specifications: {
-        type: DataTypes.ARRAY(DataTypes.STRING), // Using ARRAY for list of strings
+        type: DataTypes.ARRAY(DataTypes.STRING),
         allowNull: false,
         defaultValue: [],
       },
       transportation: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: false, // Assuming default transportation value is false
+        defaultValue: false,
       },
       isBooked: {
         type: DataTypes.BOOLEAN,

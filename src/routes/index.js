@@ -1,30 +1,22 @@
-const express = require("express");
-const userRoutes = require("./user.route");
-const userAuthRoutes = require("./user.auth.route");
-const renterAuthRoutes = require("./renter.auth.route");
-const userProfileRoutes = require("./user.profile.route");
-const renterProfileRoutes = require("./renter.profile.route");
-const otpController = require("./otp.route");
-const equipmentRoutes = require("./equipment.route");
-const renterRoutes = require("./renter.route");
-const bookingRoutes = require("./booking.route");
-const admin = require("./admin.route");
-const forgetPassword = require("./forget.password.route");
-const notificationRoutes = require("./notification.route");
+import express from "express";
+import userRoutes from "./user.route.js";
+import userAuthRoutes from "./user.auth.route.js";
+import userProfileRoutes from "./user.profile.route.js";
+import otpController from "./otp.route.js";
+import equipmentRoutes from "./equipment.route.js";
+import bookingRoutes from "./booking.route.js";
+import forgetPassword from "./forget.password.route.js";
+import notificationRoutes from "./notification.route.js";
 
 const router = express.Router();
 
-router.use("/admin", admin);
 router.use("/userAuth", userAuthRoutes);
-router.use("/renterAuth", renterAuthRoutes);
 router.use("/users", userRoutes);
-router.use("/renters", renterRoutes);
 router.use("/otp", otpController);
 router.use("/resetPassword", forgetPassword);
 router.use("/userProfile", userProfileRoutes);
-router.use("/renterProfile", renterProfileRoutes);
 router.use("/equipments", equipmentRoutes);
 router.use("/bookings", bookingRoutes);
 router.use("/notification", notificationRoutes);
 
-module.exports = router;
+export default router;

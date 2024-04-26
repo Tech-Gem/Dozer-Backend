@@ -1,17 +1,17 @@
-const express = require("express");
-const {
+import express from "express";
+import {
   createUserProfile,
   getAllUserProfiles,
   getUserProfileById,
   updateUserProfile,
   deleteUserProfile,
-} = require("../controllers/user.profile.controller");
+} from "../controllers/user.profile.controller.js";
+import { authenticate } from "../middlewares/authentication.middlewares.js";
+import { multerUploads } from "../middlewares/multer.middlewares.js";
+
 const router = express.Router();
-const { authenticate } = require("../middlewares/authentication.middlewares");
-const { multerUploads } = require("../middlewares/multer.middlewares");
 
 // POST route for creating user profile
-
 router
   .route("/")
   .post(authenticate, multerUploads, createUserProfile)
@@ -23,4 +23,4 @@ router
   .put(authenticate, updateUserProfile)
   .delete(authenticate, deleteUserProfile);
 
-module.exports = router;
+export default router;

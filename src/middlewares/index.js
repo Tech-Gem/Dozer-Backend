@@ -1,8 +1,4 @@
-const { authenticate, authorize } = require("./authentication.middlewares");
-const errorHandlerMiddleware = require("./errorHandler.middlewares");
+import { authenticate, authorize } from "./authentication.middlewares.js";
+import errorHandlerMiddleware from "./errorHandler.middlewares.js";
 
-module.exports = {
-  authenticate,
-  authorize,
-  errorHandlerMiddleware,
-};
+export { authenticate, authorize, errorHandlerMiddleware };

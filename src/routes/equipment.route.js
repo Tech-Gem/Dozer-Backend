@@ -1,8 +1,8 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const {
+
+import {
   createEquipment,
-  searchEquipment,
   searchEquipmentByLocation,
   getEquipmentById,
   searchEquipmentByCategory,
@@ -10,22 +10,24 @@ const {
   updateEquipment,
   getAllAvailableEquipments,
   deleteEquipment,
-} = require("../controllers/equipment.controller");
-const { authenticate } = require("../middlewares/authentication.middlewares");
-const { multerUploads } = require("../middlewares/multer.middlewares");
-// multerUploads;
+} from "../controllers/equipment.controller.js";
+
+import { authenticate } from "../middlewares/authentication.middlewares.js";
+import { multerUploads } from "../middlewares/multer.middlewares.js";
+
 router
   .route("/")
   .post(authenticate, createEquipment)
   .get(authenticate, getAllEquipments);
+
 router.get("/available", authenticate, getAllAvailableEquipments);
-// router.get("/search", searchEquipment);
 router.get("/by-location/:location", searchEquipmentByLocation);
 router.get("/by-category/:category", searchEquipmentByCategory);
+
 router
   .route("/:id")
   .get(authenticate, getEquipmentById)
   .patch(authenticate, multerUploads, updateEquipment)
   .delete(authenticate, deleteEquipment);
 
-module.exports = router;
+export default router;

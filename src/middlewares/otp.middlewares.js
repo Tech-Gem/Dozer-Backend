@@ -1,4 +1,3 @@
-// middleware/otp.js
 const setUserPhoneNumber = (req, res, next) => {
   const { phoneNumber } = req.body;
   if (phoneNumber) {
@@ -11,4 +10,4 @@ const setUserPhoneNumber = (req, res, next) => {
   }
 };
 
-module.exports = { setUserPhoneNumber };
+export { setUserPhoneNumber };

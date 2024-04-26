@@ -1,8 +1,8 @@
-const User = require("../models").User;
-const { StatusCodes } = require("http-status-codes");
-const { validationResult } = require("express-validator");
+import { User } from "../models/index.js";
+import { StatusCodes } from "http-status-codes";
+import { validationResult } from "express-validator";
 
-exports.getUsers = async (req, res) => {
+export const getUsers = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -37,7 +37,7 @@ exports.getUsers = async (req, res) => {
   }
 };
 
-exports.getUser = async (req, res) => {
+export const getUser = async (req, res) => {
   try {
     const { id } = req.params;
     const errors = validationResult(req);
@@ -70,7 +70,7 @@ exports.getUser = async (req, res) => {
   }
 };
 
-exports.getRenters = async (req, res) => {
+export const getRenters = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

@@ -1,16 +1,16 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const httpStatus = require("http-status");
-const CustomError = require("../errors");
-const { User, UserProfile, Otp } = require("../models");
-const { Op } = require("sequelize");
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import httpStatus from "http-status";
+import CustomError from "../errors/index.js";
+import { User, UserProfile, Otp } from "../models/index.js";
+import { Op } from "sequelize";
 
-const userRegistration = async (req, res, next) => {
+export const userRegistration = async (req, res, next) => {
   try {
-    const { email, password, phoneNumber, fullName } = req.body;
+    const { email, password, phoneNumber, firstName, lastName } = req.body;
 
     // Check if all required fields are provided
-    if (!email || !password || !phoneNumber || !fullName) {
+    if ((!email || !password || !phoneNumber || !firstName, !lastName)) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -48,7 +48,8 @@ const userRegistration = async (req, res, next) => {
     // Create UserProfile associated with the newly created User
     const userProfile = await UserProfile.create({
       userId: newUser.id,
-      fullName,
+      firstName,
+      lastName,
     });
 
     await userOtp.update({ userId: newUser.id });
@@ -67,7 +68,7 @@ const userRegistration = async (req, res, next) => {
   }
 };
 
-const userLogin = async (req, res, next) => {
+export const userLogin = async (req, res, next) => {
   try {
     const { phoneNumber, password } = req.body;
     let user = await User.scope("withPassword").findOne({
@@ -93,9 +94,4 @@ const userLogin = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-};
-
-module.exports = {
-  userRegistration,
-  userLogin,
 };

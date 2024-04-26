@@ -1,4 +1,4 @@
-const { body } = require("express-validator");
+import { body } from "express-validator";
 
 const addUserValidation = [
   body("email").isEmail().withMessage("Email is required"),
@@ -7,6 +7,4 @@ const addUserValidation = [
   body("role").notEmpty().withMessage("Role is required"),
 ];
 
-module.exports = {
-  addUserValidation,
-};
+export { addUserValidation };

@@ -1,7 +1,7 @@
-const axios = require("axios");
-const { User, Otp } = require("../models");
+import axios from "axios";
+import { User, Otp } from "../models/index.js";
 
-exports.sendSecurityCode = async (req, res, next) => {
+export const sendSecurityCode = async (req, res, next) => {
   const phoneNumber = req.session.phoneNumber;
 
   try {
@@ -35,8 +35,6 @@ exports.sendSecurityCode = async (req, res, next) => {
     // Make an HTTP GET request to send the security code
     const response = await axios.get(url, { headers });
 
-    // console.log("Response data:", response.data); // Log the response data for debugging
-
     if (response.data.acknowledge === "success") {
       const receivedVerificationId = response.data.response.verificationId; // Extracting verificationId from the request body
       const receivedOtpCode = response.data.response.code; // Extracting OTP code from the request body
@@ -62,7 +60,7 @@ exports.sendSecurityCode = async (req, res, next) => {
 };
 
 // Function to verify the security code
-exports.verifySecurityCode = async (req, res, next) => {
+export const verifySecurityCode = async (req, res, next) => {
   const { code, phoneNumber } = req.body;
 
   try {

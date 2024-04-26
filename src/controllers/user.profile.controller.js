@@ -1,8 +1,8 @@
-const { User, UserProfile } = require("../models");
-const { StatusCodes } = require("http-status-codes");
-const { uploadToCloudinary } = require("../middlewares/multer.middlewares");
+import { User, UserProfile } from "../models/index.js";
+import { StatusCodes } from "http-status-codes";
+import { uploadToCloudinary } from "../middlewares/multer.middlewares.js";
 
-exports.createUserProfile = async (req, res, next) => {
+export const createUserProfile = async (req, res, next) => {
   try {
     const requiredFields = ["firstName", "lastName", "jobTitle"];
     const missingFields = requiredFields.filter((field) => !req.body[field]);
@@ -62,8 +62,7 @@ exports.createUserProfile = async (req, res, next) => {
   }
 };
 
-// Function to fetch all user profiles
-exports.getAllUserProfiles = async (req, res, next) => {
+export const getAllUserProfiles = async (req, res, next) => {
   try {
     const allUserProfiles = await UserProfile.findAll({
       include: [
@@ -105,8 +104,7 @@ exports.getAllUserProfiles = async (req, res, next) => {
   }
 };
 
-// Function to get a specific user profile by ID
-exports.getUserProfileById = async (req, res, next) => {
+export const getUserProfileById = async (req, res, next) => {
   try {
     const { id } = req.params; // Assuming you receive the profile ID from the request parameters
 
@@ -152,8 +150,7 @@ exports.getUserProfileById = async (req, res, next) => {
   }
 };
 
-// Function to update a user profile by ID
-exports.updateUserProfile = async (req, res, next) => {
+export const updateUserProfile = async (req, res, next) => {
   try {
     const { id } = req.params; // Assuming you receive the profile ID from the request parameters
     const updateFields = req.body; // Assuming you receive the updated fields in the request body
@@ -191,7 +188,7 @@ exports.updateUserProfile = async (req, res, next) => {
   }
 };
 
-exports.deleteUserProfile = async (req, res, next) => {
+export const deleteUserProfile = async (req, res, next) => {
   try {
     const { id } = req.params; // Assuming you receive the profile ID from the request parameters
 
