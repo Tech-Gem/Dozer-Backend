@@ -1,6 +1,6 @@
 import { Equipment } from "../models/index.js";
 import { StatusCodes } from "http-status-codes";
-import { uploadToCloudinary } from "../middlewares/multer.middlewares.js";
+// import { uploadToCloudinary } from "../middlewares/multer.middlewares.js";
 
 export const createEquipment = async (req, res, next) => {
   try {

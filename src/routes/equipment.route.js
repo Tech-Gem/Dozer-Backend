@@ -13,7 +13,7 @@ import {
 } from "../controllers/equipment.controller.js";
 
 import { authenticate } from "../middlewares/authentication.middlewares.js";
-import { multerUploads } from "../middlewares/multer.middlewares.js";
+// import { multerUploads } from "../middlewares/multer.middlewares.js";
 
 router
   .route("/")
@@ -27,7 +27,7 @@ router.get("/by-category/:category", searchEquipmentByCategory);
 router
   .route("/:id")
   .get(authenticate, getEquipmentById)
-  .patch(authenticate, multerUploads, updateEquipment)
+  .patch(authenticate, updateEquipment)
   .delete(authenticate, deleteEquipment);
 
 export default router;

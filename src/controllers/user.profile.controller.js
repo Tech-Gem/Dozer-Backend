@@ -1,6 +1,6 @@
 import { User, UserProfile } from "../models/index.js";
 import { StatusCodes } from "http-status-codes";
-import { uploadToCloudinary } from "../middlewares/multer.middlewares.js";
+// import { uploadToCloudinary } from "../middlewares/multer.middlewares.js";
 
 export const createUserProfile = async (req, res, next) => {
   try {
@@ -25,10 +25,10 @@ export const createUserProfile = async (req, res, next) => {
     const folderName = "userProfile";
 
     // Upload the image to Cloudinary
-    const cloudinaryResult = await uploadToCloudinary(
-      req.file.buffer,
-      folderName
-    );
+    // const cloudinaryResult = await uploadToCloudinary(
+    //   req.file.buffer,
+    //   folderName
+    // );
 
     // Find or create the user profile associated with the user ID
     const [userProfile, created] = await UserProfile.findOrCreate({

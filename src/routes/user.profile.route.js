@@ -7,14 +7,14 @@ import {
   deleteUserProfile,
 } from "../controllers/user.profile.controller.js";
 import { authenticate } from "../middlewares/authentication.middlewares.js";
-import { multerUploads } from "../middlewares/multer.middlewares.js";
+// import { multerUploads } from "../middlewares/multer.middlewares.js";
 
 const router = express.Router();
 
 // POST route for creating user profile
 router
   .route("/")
-  .post(authenticate, multerUploads, createUserProfile)
+  .post(authenticate, createUserProfile)
   .get(authenticate, getAllUserProfiles);
 
 router
