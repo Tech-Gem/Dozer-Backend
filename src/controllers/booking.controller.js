@@ -120,10 +120,10 @@ export const verifyPayment = async (req, res) => {
       .createHmac("sha256", process.env.CHAPA_WEBHOOK_SECRET)
       .update(JSON.stringify(req.body))
       .digest("hex");
-    console.log(req.headers["x-chapa-signature"]);
+    console.log(req.headers["Chapa-Signature"]);
     console.log(hash);
 
-    if (hash == req.headers["x-chapa-signature"]) {
+    if (hash == req.headers["Chapa-Signature"]) {
       console.log("Valid Chapa signature");
 
       // Retrieve the request's body
