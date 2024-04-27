@@ -116,12 +116,12 @@ export const createBooking = async (req, res) => {
 
 export const handleWebhook = function (req, res) {
   //validate event
-  console.log(process.env.CHAPA_WEBHOOK_SECRET, req);
+  console.log("paymeentlog", process.env.CHAPA_WEBHOOK_SECRET, req);
   const hash = crypto
     .createHmac("sha256", process.env.CHAPA_WEBHOOK_SECRET)
     .update(JSON.stringify(req.body))
     .digest("hex");
-  console.log(hash, req.headers["Chapa-Signature"]);
+  console.log("paymeentlog", hash, req.headers["Chapa-Signature"]);
   if (hash == req.headers["Chapa-Signature"]) {
     // Retrieve the request's body
     const event = req.body;
