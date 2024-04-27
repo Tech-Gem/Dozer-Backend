@@ -79,7 +79,7 @@ export const createBooking = async (req, res) => {
       last_name: userProfile.lastName,
       // phone_number: user.phoneNumber,
       callback_url:
-        "https://dozer-backend-tech-gem.onrender.com/api/v1/bookings/verifyPayment",
+        "https://dozer-backend-tech-gem.onrender.com/api/v1/bookings/webhook",
       // return_url: "",
       // "customization[title]": "Payment for my favourite merchant",
       // "customization[description]": "I love online payments",
@@ -116,6 +116,7 @@ export const createBooking = async (req, res) => {
 
 export const handleWebhook = function (req, res) {
   //validate event
+  console.log(process.env.CHAPA_WEBHOOK_SECRET, req);
   const hash = crypto
     .createHmac("sha256", process.env.CHAPA_WEBHOOK_SECRET)
     .update(JSON.stringify(req.body))
@@ -125,7 +126,7 @@ export const handleWebhook = function (req, res) {
     // Retrieve the request's body
     const event = req.body;
   }
-  res.sendStatus(200);
+  res.sendStatus(500);
 };
 
 export const verifyPayment = async (req, res) => {
