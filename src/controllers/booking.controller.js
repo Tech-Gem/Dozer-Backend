@@ -78,7 +78,8 @@ export const createBooking = async (req, res) => {
       first_name: userProfile.firstName,
       last_name: userProfile.lastName,
       // phone_number: user.phoneNumber,
-      // callback_url: "https://webhook.site/077164d6-29cb-40df-ba29-8a00e59a7e60",
+      callback_url:
+        "https://dozer-backend-tech-gem.onrender.com/api/v1/bookings/verifyPayment",
       // return_url: "",
       // "customization[title]": "Payment for my favourite merchant",
       // "customization[description]": "I love online payments",
