@@ -15,10 +15,7 @@ router
   .post(authenticate, createBooking)
   .get(authenticate, getAllBookings);
 
-router
-  .route("/webhook")
-  .post(authenticate, handleWebhook)
-  .get(authenticate, handleWebhook);
+router.route("/webhook").post(handleWebhook).get(handleWebhook);
 
 router.get("/verifyPayment", authenticate, verifyPayment);
 
