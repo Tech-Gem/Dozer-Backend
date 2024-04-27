@@ -121,8 +121,8 @@ export const handleWebhook = function (req, res) {
     .createHmac("sha256", process.env.CHAPA_WEBHOOK_SECRET)
     .update(JSON.stringify(req.body))
     .digest("hex");
-  console.log("paymeentlog", hash, req.headers["Chapa-Signature"]);
-  if (hash == req.headers["Chapa-Signature"]) {
+  console.log("paymeentlog", hash, req.headers["x-chapa-Signature"]);
+  if (hash == req.headers["x-chapa-Signature"]) {
     // Retrieve the request's body
     const event = req.body;
   }
