@@ -123,8 +123,8 @@ export const handleWebhook = async (req, res) => {
       .update(JSON.stringify(req.body))
       .digest("hex");
 
-    console.log("paymentlog", hash, req.headers["x-chapa-Signature"]);
-    if (hash == req.headers["x-chapa-Signature"]) {
+    console.log("paymentlog", hash, req.headers["x-chapa-signature"]);
+    if (hash == req.headers["x-chapa-signature"]) {
       // Retrieve the request's body
       const event = req.body;
       console.log("Event", event);
