@@ -115,18 +115,42 @@ export const createBooking = async (req, res) => {
 };
 
 export const handleWebhook = async (req, res) => {
-  //validate event
-  console.log("paymeentlog", process.env.CHAPA_WEBHOOK_SECRET, req);
-  const hash = crypto
-    .createHmac("sha256", process.env.CHAPA_WEBHOOK_SECRET)
-    .update(JSON.stringify(req.body))
-    .digest("hex");
-  console.log("paymeentlog", hash, req.headers["x-chapa-Signature"]);
-  if (hash == req.headers["x-chapa-Signature"]) {
-    // Retrieve the request's body
-    const event = req.body;
+  try {
+    //validate event
+    console.log("Request", process.env.CHAPA_WEBHOOK_SECRET, req);
+    const hash = crypto
+      .createHmac("sha256", process.env.CHAPA_WEBHOOK_SECRET)
+      .update(JSON.stringify(req.body))
+      .digest("hex");
+
+    console.log("paymentlog", hash, req.headers["x-chapa-Signature"]);
+    if (hash == req.headers["x-chapa-Signature"]) {
+      // Retrieve the request's body
+      const event = req.body;
+      console.log("Event", event);
+      const { tx_ref } = event;
+      const book = await Booking.findOne({
+        txRef: tx_ref,
+      });
+      // check if the book doesn't exist or payment status is not pending
+      if (!book || book.paymentStatus != "pending") {
+        // Return a response to acknowledge receipt of the event
+        return res.sendStatus(200);
+      }
+      // change payment status to completed
+      if (book.paymentStatus == "pending") {
+        book.paymentStatus = "completed";
+        await book.save();
+      }
+
+      return res.sendStatus(200);
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      msg: error.message || "Internal server error",
+    });
   }
-  res.sendStatus(500);
 };
 
 export const verifyPayment = async (req, res) => {
