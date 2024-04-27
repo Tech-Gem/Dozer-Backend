@@ -13,6 +13,6 @@ router
   .post(authenticate, createBooking)
   .get(authenticate, getAllBookings);
 
-router.post("/verifyPayment", authenticate, verifyPayment);
+router.get("/verifyPayment", authenticate, verifyPayment);
 
 export default router;
