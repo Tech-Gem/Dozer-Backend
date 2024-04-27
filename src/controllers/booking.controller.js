@@ -114,6 +114,20 @@ export const createBooking = async (req, res) => {
   }
 };
 
+export const handleWebhook = function (req, res) {
+  //validate event
+  const hash = crypto
+    .createHmac("sha256", process.env.SECRET_KEY)
+    .update(JSON.stringify(req.body))
+    .digest("hex");
+  if (hash == req.headers["Chapa-Signature"]) {
+    // Retrieve the request's body
+    const event = req.body;
+    console.log(event);
+  }
+  res.send(200);
+};
+
 export const verifyPayment = async (req, res) => {
   try {
     //validate that this was indeed sent by Chapa's server
