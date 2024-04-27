@@ -114,7 +114,7 @@ export const createBooking = async (req, res) => {
   }
 };
 
-export const handleWebhook = function (req, res) {
+export const handleWebhook = async (req, res) => {
   //validate event
   console.log("paymeentlog", process.env.CHAPA_WEBHOOK_SECRET, req);
   const hash = crypto
