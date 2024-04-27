@@ -132,14 +132,10 @@ export const handleWebhook = async (req, res) => {
       const book = await Booking.findOne({
         txRef: tx_ref,
       });
-      // check if the book doesn't exist or payment status is not pending
-      if (!book || book.paymentStatus != "pending") {
-        // Return a response to acknowledge receipt of the event
-        return res.sendStatus(200);
-      }
+
       // change payment status to completed
-      if (book.paymentStatus == "pending") {
-        book.paymentStatus = "completed";
+      if (book && book.paymentStatus == "Pending") {
+        book.paymentStatus = "Approved";
         await book.save();
       }
 
