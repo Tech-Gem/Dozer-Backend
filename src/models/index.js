@@ -63,6 +63,8 @@ export const User = db.User;
 export const UserProfile = db.UserProfile;
 export const Otp = db.Otp;
 export const Notification = db.Notification;
+export const Bidding = db.Bidding;
+export const Bidder = db.Bidder;
 
 export default db;
 
