@@ -9,10 +9,13 @@ import forgetPassword from "./forget.password.route.js";
 import notificationRoutes from "./notification.route.js";
 import biddingRoutes from "./bidding.route.js";
 import bidderRoutes from "./bidder.route.js";
+import adminRoutes from "./admin.route.js";
+
 const router = express.Router();
 
 router.use("/userAuth", userAuthRoutes);
 router.use("/users", userRoutes);
+router.use("/admin", adminRoutes);
 router.use("/otp", otpController);
 router.use("/resetPassword", forgetPassword);
 router.use("/userProfile", userProfileRoutes);

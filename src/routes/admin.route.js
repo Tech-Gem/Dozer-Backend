@@ -1,8 +1,9 @@
-// const express = require("express");
-// const router = express.Router();
+import express from "express";
 
-// const { verifyRenter } = require("../controllers/admin.controller");
+const router = express.Router();
 
-// router.patch("/verify/:renterId", verifyRenter);
+import verifyRenter from "../controllers/admin.controller.js";
 
-// module.exports = router;
+router.patch("/verify/:id", verifyRenter);
+
+export default router;

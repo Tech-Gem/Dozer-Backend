@@ -103,19 +103,56 @@ export const searchEquipmentByCategory = async (req, res) => {
   }
 };
 
+export const filterEquipments = async (req, res) => {
+  try {
+    const { locations, categories } = req.body;
+
+    let filterOptions = {};
+
+    // Add location filter if locations are provided
+    if (locations && locations.length > 0) {
+      filterOptions.location = locations;
+    }
+
+    // Add category filter if categories are provided
+    if (categories && categories.length > 0) {
+      filterOptions.category = categories;
+    }
+
+    const filteredEquipments = await Equipment.findAll({
+      where: filterOptions,
+    });
+
+    res
+      .status(StatusCodes.OK)
+      .json({ status: "success", equipments: filteredEquipments });
+  } catch (error) {
+    res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
+  }
+};
+
 export const updateEquipment = async (req, res) => {
   try {
     const { id } = req.params;
-    const [updated] = await Equipment.update(req.body, {
-      where: { id },
-    });
-    if (updated) {
-      const updatedEquipment = await Equipment.findByPk(id);
+    const updateFields = req.body;
+
+    // Check if equipment exists
+    const existingEquipment = await Equipment.findByPk(id);
+    if (!existingEquipment) {
       return res
-        .status(StatusCodes.OK)
-        .json({ status: "success", updatedEquipment });
+        .status(StatusCodes.NOT_FOUND)
+        .json({ error: "Equipment not found" });
     }
-    throw new Error("Equipment not found");
+
+    // Update the equipment properties
+    Object.assign(existingEquipment, updateFields);
+
+    // Save the updated equipment
+    await existingEquipment.save();
+
+    res
+      .status(StatusCodes.OK)
+      .json({ status: "success", equipment: existingEquipment });
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }

@@ -1,6 +1,7 @@
 import { Bidding, Equipment } from "../models/index.js";
 import { StatusCodes } from "http-status-codes";
 import moment from "moment"; // Import moment.js for date manipulation
+import WebSocket from "ws";
 
 export const createBidding = async (req, res) => {
   try {

@@ -1,5 +1,6 @@
 import admin from "firebase-admin";
 import serviceAccount from "./dozerAccountKey.json" assert { type: "json" };
+// import { WebSocketServer } from "ws";
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -99,4 +100,14 @@ db.sequelize.sync().then(() => {
     seedAdminUser();
     console.log(`Server running on port ${process.env.PORT}`);
   });
+
+  // const wss = new WebSocketServer({ port: 8080 });
+
+  // wss.on("connection", function connection(ws) {
+  //   ws.on("message", function message(data) {
+  //     console.log("received: %s", data);
+  //   });
+
+  //   ws.send("something");
+  // });
 });

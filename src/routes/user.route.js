@@ -1,12 +1,21 @@
 import express from "express";
-import { getUsers, getUser } from "../controllers/user.controller.js";
+import {
+  getUsers,
+  getUser,
+  getRenters,
+  deleteUser,
+} from "../controllers/user.controller.js";
 import { authenticate } from "../middlewares/authentication.middlewares.js";
 
 const router = express.Router();
 
-// get all users
 router.route("/").get(authenticate, getUsers);
 
-router.route("/:id").get(authenticate, getUser);
+router.get("/renters", authenticate, getRenters);
+
+router
+  .route("/:id")
+  .get(authenticate, getUser)
+  .delete(authenticate, deleteUser);
 
 export default router;

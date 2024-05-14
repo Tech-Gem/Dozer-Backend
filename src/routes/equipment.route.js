@@ -10,6 +10,7 @@ import {
   updateEquipment,
   getAllAvailableEquipments,
   deleteEquipment,
+  filterEquipments,
 } from "../controllers/equipment.controller.js";
 
 import { authenticate } from "../middlewares/authentication.middlewares.js";
@@ -29,5 +30,7 @@ router
   .get(authenticate, getEquipmentById)
   .patch(authenticate, updateEquipment)
   .delete(authenticate, deleteEquipment);
+
+router.post("/filter", filterEquipments);
 
 export default router;

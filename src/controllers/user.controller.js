@@ -23,13 +23,7 @@ export const getUsers = async (req, res) => {
         .json({ message: "No users found" });
     }
 
-    const filteredUsers = users.filter(
-      (user) => user.email !== process.env.ADMIN_EMAIL
-    );
-
-    res
-      .status(StatusCodes.OK)
-      .json({ status: "success", users: filteredUsers });
+    res.status(StatusCodes.OK).json({ status: "success", users: users });
   } catch (error) {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
@@ -92,6 +86,41 @@ export const getRenters = async (req, res) => {
     }
 
     res.status(StatusCodes.OK).json({ status: "success", users });
+  } catch (error) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ errors: errors.array()[0].msg });
+    }
+
+    const user = await User.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "User not found" });
+    }
+
+    await user.destroy();
+
+    return res.status(StatusCodes.OK).json({
+      status: "success",
+      message: "User deleted successfully",
+    });
   } catch (error) {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)

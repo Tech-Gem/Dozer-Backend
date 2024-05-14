@@ -1,23 +1,40 @@
-// const { RenterProfile } = require("../models");
+import { User, UserProfile } from "../models/index.js";
 
-// exports.verifyRenter = async (req, res) => {
-//   try {
-//     const { renterId } = req.params;
+const verifyRenter = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-//     // Find the renter by ID
-//     const renter = await RenterProfile.findOne({ _id: renterId });
+    // Find the renter by ID
+    const user = await User.findOne({
+      where: {
+        id,
+      },
+    });
 
-//     if (!renter) {
-//       return res.status(404).json({ error: "Renter not found" });
-//     }
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-//     // Update the verification status
-//     renter.isVerified = true;
-//     await renter.save();
+    // Update the verification status
+    const user_profile = await UserProfile.findOne({
+      where: { userId: id },
+    });
 
-//     res.json({ message: "Renter account verified successfully" });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Internal Server Error" });
-//   }
-// };
+    if (!user_profile) {
+      return res.status(404).json({ error: "User profile not found" });
+    }
+
+    user.role = "renter";
+    user_profile.verifiedRenter = true;
+
+    await user.save();
+    await user_profile.save();
+
+    res.json({ message: "User account verified to Renter successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+export default verifyRenter;
