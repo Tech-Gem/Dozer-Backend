@@ -65,6 +65,7 @@ export const Otp = db.Otp;
 export const Notification = db.Notification;
 export const Bidding = db.Bidding;
 export const Bidder = db.Bidder;
+export const BidSpace = db.BidSpace;
 
 export default db;
 

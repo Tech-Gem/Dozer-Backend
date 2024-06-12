@@ -1,5 +1,5 @@
 import admin from "firebase-admin";
-import serviceAccount from "./dozerAccountKey.json" assert { type: "json" };
+import serviceAccount from "./config/dozerAccountKey.json" assert { type: "json" };
 // import { WebSocketServer } from "ws";
 import faker from "faker";
 import { v4 as uuidv4 } from "uuid";
@@ -126,14 +126,18 @@ const seedUsers = async () => {
   const renterIds = createdUsers
     .filter((user) => user.role === "renter")
     .map((user) => user.id);
+  console.log("Seeded User IDs:", userIds); // Log to verify
+  console.log("Renter IDs:", renterIds); // Log to verify
+
   return { userIds, renterIds };
 };
 
-const seedEquipment = async (renterIds) => {
+const seedEquipments = async (renterIds) => {
   if (!renterIds || renterIds.length === 0) {
     console.error("No renter IDs available for seeding equipment.");
     return;
   }
+  console.log("Renter IDs for seeding equipment:", renterIds); // Log to verify
 
   const equipmentNames = [
     "Excavator",
@@ -164,6 +168,7 @@ const seedEquipment = async (renterIds) => {
     LiftAerialWorkPlatform: ["Genie S-60", "JLG 600S", "Haulotte HA16"],
     RollersCompaction: ["Bomag BW 120", "Dynapac CA250", "HAMM HD 12 VV"],
   };
+    
   const specifications = {
     CompactEquipment: [
       "Engine Power: 10 kW",
@@ -237,8 +242,8 @@ const seedEquipment = async (renterIds) => {
         location: faker.address.city(),
         description: faker.lorem.sentence(),
         category: category,
-        image: [faker.random.arrayElement(equipmentImages)],
-        rating: faker.datatype.float({ min: 1, max: 5, precision: 0.1 }),
+        image: faker.random.arrayElement(equipmentImages),
+        // rating: faker.datatype.float({ min: 1, max: 5, precision: 0.1 }),
         capacity: `${faker.datatype.number({ min: 1, max: 5 })} Ton`,
         model: faker.random.arrayElement(models[category]),
         specifications: specifications[category],
@@ -252,85 +257,15 @@ const seedEquipment = async (renterIds) => {
   await db.Equipment.bulkCreate(equipment);
 };
 
-const seedUserProfiles = async (userIds) => {
-  const userProfiles = [];
-
-  userIds.forEach((userId) => {
-    userProfiles.push({
-      id: uuidv4(),
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-      jobTitle: faker.name.jobTitle(),
-      verifiedRenter: faker.datatype.boolean(),
-      image: faker.image.avatar(),
-      userId: userId,
-    });
-  });
-
-  await db.UserProfile.bulkCreate(userProfiles);
-};
-
-const seedBookings = async () => {
-  const equipments = await db.Equipment.findAll();
-  const users = await db.User.findAll();
-  const usersProfiles = await db.UserProfile.findAll();
-
-  if (equipments.length === 0) {
-    console.error("No equipment available for seeding bookings.");
-    return;
-  }
-
-  if (users.length === 0) {
-    console.error("No users available for seeding bookings.");
-    return;
-  }
-
-  const bookings = [];
-
-  for (let i = 0; i < 50; i++) {
-    const equipment = faker.random.arrayElement(equipments);
-    const user = faker.random.arrayElement(users);
-    const userProfile = faker.random.arrayElement(usersProfiles);
-
-    bookings.push({
-      id: uuidv4(),
-      equipmentName: equipment.name,
-      equipmentPrice: equipment.pricePerHour,
-      firstName: userProfile.firstName,
-      lastName: userProfile.lastName,
-      email: user.email,
-      startDate: faker.date.recent(),
-      endDate: faker.date.future(),
-      quantity: faker.datatype.number({ min: 1, max: equipment.quantity }),
-      location: equipment.location,
-      signature: faker.lorem.word(),
-      termsAndConditions: faker.datatype.boolean(),
-      txRef: uuidv4(),
-      paymentStatus: faker.random.arrayElement([
-        "Pending",
-        "Approved",
-        "Rejected",
-      ]),
-      equipmentId: equipment.id,
-      userId: user.id,
-    });
-  }
-
-  await db.Booking.bulkCreate(bookings);
-};
-
 const seedData = async () => {
   await deleteSeedData(); // Delete existing seed data
   const { userIds, renterIds } = await seedUsers();
   console.log("User IDs:", userIds); // Log to verify
   console.log("Renter IDs:", renterIds); // Log to verify
   if (renterIds.length > 0) {
-    await seedEquipment(renterIds);
+    await seedEquipments(renterIds);
   }
-  if (userIds.length > 0) {
-    await seedUserProfiles(userIds);
-  }
-  await seedBookings();
+  // await seedBookings();
 };
 
 db.sequelize.sync().then(() => {

@@ -24,6 +24,10 @@ export default {
         allowNull: false,
         defaultValue: 0.0,
       },
+      rating: {
+        type: Sequelize.DECIMAL(2, 1),
+        defaultValue: 0.0,
+      },
       location: {
         type: Sequelize.STRING,
         allowNull: false,

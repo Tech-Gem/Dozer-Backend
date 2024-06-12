@@ -36,6 +36,10 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: 0.0,
       },
+      rating: {
+        type: DataTypes.DECIMAL(2, 1),
+        defaultValue: 0.0,
+      },
       location: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -102,3 +106,4 @@ export default (sequelize, DataTypes) => {
   );
   return Equipment;
 };
+

@@ -55,6 +55,7 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
         required: true,
       },
+      
       quantity: {
         type: DataTypes.INTEGER,
         allowNull: false,
