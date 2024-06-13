@@ -11,6 +11,10 @@ export default (sequelize, DataTypes) => {
         foreignKey: "equipmentId",
         onDelete: "CASCADE",
       });
+      Equipment.hasMany(models.Review, {
+        foreignKey: "equipmentId",
+        onDelete: "CASCADE",
+      });
     }
   }
   Equipment.init(
@@ -106,4 +110,3 @@ export default (sequelize, DataTypes) => {
   );
   return Equipment;
 };
-

@@ -320,7 +320,7 @@ const seedBookings = async () => {
 };
 
 const seedData = async () => {
-  await deleteSeedData(); // Delete existing seed data
+  // await deleteSeedData();
   const { userIds, renterIds } = await seedUsers();
   console.log("User IDs:", userIds); // Log to verify
   console.log("Renter IDs:", renterIds); // Log to verify

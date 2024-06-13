@@ -12,6 +12,7 @@ import bidderRoutes from "./bidder.route.js";
 import adminRoutes from "./admin.route.js";
 import bidSpaceRoutes from "./bid.space.route.js";
 import recommendationRoutes from "./recommendation.route.js";
+import reviewRoutes from "./review.route.js";
 const router = express.Router();
 
 router.use("/userAuth", userAuthRoutes);
@@ -27,5 +28,6 @@ router.use("/biddings", biddingRoutes);
 router.use("/bidders", bidderRoutes);
 router.use("/bidSpace", bidSpaceRoutes);
 router.use("/recommendations", recommendationRoutes);
+router.use("/reviews", reviewRoutes);
 
 export default router;
