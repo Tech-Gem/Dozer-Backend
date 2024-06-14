@@ -39,7 +39,7 @@ export const getAllUserProfiles = async (req, res, next) => {
       include: [
         {
           model: User,
-          attributes: ["email", "phoneNumber", "phoneNumberVerified", "role"],
+          attributes: ["email", "phoneNumber", "isSubscribed"],
         },
       ],
       attributes: {
@@ -53,16 +53,12 @@ export const getAllUserProfiles = async (req, res, next) => {
         id: profile.id,
         fullName: profile.fullName,
         firstName: profile.firstName,
-        middleName: profile.middleName,
         lastName: profile.lastName,
         jobTitle: profile.jobTitle,
         image: profile.image,
         email: profile.User.email,
         phoneNumber: profile.User.phoneNumber,
-        phoneNumberVerified: profile.User.phoneNumberVerified,
-        role: profile.User.role,
         createdAt: profile.createdAt,
-        updatedAt: profile.updatedAt,
       };
     });
 
