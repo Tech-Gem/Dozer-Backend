@@ -124,7 +124,7 @@ export const verifySubscription = async (req, res) => {
 
         if (verifiedData.status === "success") {
           subscription.paymentStatus = "Approved";
-          subscription.status = "Active";
+          subscription.subscriptionStatus = "Active";
           await subscription.save();
 
           // Update user subscription status
