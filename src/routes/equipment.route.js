@@ -21,8 +21,8 @@ import {
 
 router
   .route("/")
-  .post(authenticate, authorize("renter", "admin"), createEquipment)
-  .get(authenticate, getAllEquipments);
+  .post(authenticate, authorize("renter"), createEquipment)
+  .get(authenticate, authorize("admin", "user", "renter"), getAllEquipments);
 
 router.get("/available", authenticate, getAllAvailableEquipments);
 router.get("/by-location/:location", authenticate, searchEquipmentByLocation);
