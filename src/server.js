@@ -353,6 +353,7 @@ const seedData = async () => {
 db.sequelize.sync().then(() => {
   app.listen(process.env.PORT, () => {
     // seedData();
+    seedAdminUser();
 
     console.log(`Server running on port ${process.env.PORT}`);
   });
