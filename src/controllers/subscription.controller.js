@@ -112,6 +112,12 @@ export const verifySubscription = async (req, res) => {
         subscription.paymentStatus = "Approved";
         subscription.subscriptionStatus = "Active";
         await subscription.save();
+
+        const user = await User.findByPk(subscription.userId);
+        if (user) {
+          user.isSubscribed = true;
+          await user.save();
+        }
       }
       return res.sendStatus(200);
     }

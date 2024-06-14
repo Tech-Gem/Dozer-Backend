@@ -11,6 +11,7 @@ import {
   getAllAvailableEquipments,
   deleteEquipment,
   filterEquipments,
+  getAllUserEquipments,
 } from "../controllers/equipment.controller.js";
 
 import {
@@ -27,6 +28,7 @@ router
 router.get("/available", authenticate, getAllAvailableEquipments);
 router.get("/by-location/:location", authenticate, searchEquipmentByLocation);
 router.get("/by-category/:category", authenticate, searchEquipmentByCategory);
+router.get("/user", getAllUserEquipments);
 
 router
   .route("/:id")

@@ -7,12 +7,15 @@ import {
   getAllSubscriptions,
 } from "../controllers/subscription.controller.js";
 
-import { authenticate } from "../middlewares/authentication.middlewares.js";
+import {
+  authenticate,
+  authorize,
+} from "../middlewares/authentication.middlewares.js";
 
 router
   .route("/")
   .post(authenticate, createSubscription)
-  .get(authenticate, getAllSubscriptions);
+  .get(authenticate, authorize("admin"), getAllSubscriptions);
 
 router.route("/verifyPayment").post(verifySubscription);
 

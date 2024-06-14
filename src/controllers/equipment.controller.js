@@ -87,6 +87,21 @@ export const getEquipmentById = async (req, res) => {
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
 };
+
+export const getAllUserEquipments = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const equipments = await Equipment.findAll({
+      where: { userId },
+    });
+
+    res.status(StatusCodes.OK).json({ status: "success", equipments });
+  } catch (error) {
+    res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
+  }
+};
+
 export const getAllAvailableEquipments = async (req, res) => {
   try {
     const availableEquipments = await Equipment.findAll({
