@@ -25,7 +25,7 @@ export default (sequelize, DataTypes) => {
       },
       type: {
         type: DataTypes.ENUM,
-        values: ["info", "warning", "error"],
+        values: ["Subscription", "Booking Request", "Booking Confirmation"],
         defaultValue: "info",
       },
       isRead: {

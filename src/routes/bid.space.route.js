@@ -1,4 +1,3 @@
-// biddingRoutes.js
 import express from "express";
 import {
   createBidSpace,
@@ -7,15 +6,19 @@ import {
   updateBidSpace,
   deleteBidSpace,
 } from "../controllers/bid.space.controller.js";
-import { authenticate } from "../middlewares/authentication.middlewares.js";
+import { authenticate, authorize } from "../middlewares/authentication.middlewares.js";
 
 const router = express.Router();
 
-router.route("/").post(authenticate, createBidSpace).get(getBidSpaces);
+router
+  .route("/")
+  .post(authenticate, authorize("renter"), createBidSpace)
+  .get(authenticate, authorize("renter"), getBidSpaces);
+
 router
   .route("/:id")
-  .get(getBidSpaceById)
-  .put(authenticate, updateBidSpace)
-  .delete(authenticate, deleteBidSpace);
+  .get(authenticate, authorize("renter"), getBidSpaceById)
+  .put(authenticate, authorize("renter"), updateBidSpace)
+  .delete(authenticate, authorize("renter"), deleteBidSpace);
 
 export default router;

@@ -16,7 +16,7 @@ const calculateWeight = async (
 ) => {
   const equipmentItem = await db.Equipment.findOne({
     where: { id: booking.equipmentId },
-  });
+  }); 
   let score = 0;
 
   // Booking frequency

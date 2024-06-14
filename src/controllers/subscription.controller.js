@@ -1,44 +1,13 @@
-import { Booking, Equipment, UserProfile } from "../models/index.js"; // Import models
+import { User, Subscription, UserProfile } from "../models/index.js"; // Import models
 import { StatusCodes } from "http-status-codes"; // Import status codes
 import axios from "axios"; // Import axios
 import { nanoid } from "nanoid"; // Import nanoid
 import crypto from "crypto";
 
-export const createBooking = async (req, res) => {
+export const createSubscription = async (req, res) => {
   try {
-    const {
-      equipmentId,
-      email,
-      startDate,
-      endDate,
-      quantity,
-      location,
-      signature,
-      termsAndConditions,
-    } = req.body;
-    if (
-      !equipmentId ||
-      !email ||
-      !startDate ||
-      !endDate ||
-      !quantity ||
-      !location ||
-      !signature ||
-      termsAndConditions === undefined
-    ) {
-      return res.status(400).json({
-        msg: "All fields are required",
-      });
-    }
-
-    const equipment = await Equipment.findByPk(equipmentId);
-    if (!equipment) {
-      return res.status(404).json({
-        msg: "Equipment not found",
-      });
-    }
+    const { subscriptionType, subscriptionDuration } = req.body;
     const user = req.user;
-    console.log(user);
 
     const userProfile = await UserProfile.findOne({
       where: { userId: req.user.id },
@@ -51,27 +20,32 @@ export const createBooking = async (req, res) => {
 
     const txRef = nanoid();
 
-    const booking = {
-      equipmentId: equipmentId,
-      equipmentName: equipment.name,
-      equipmentPrice: equipment.pricePerHour,
-      firstName: userProfile.firstName,
-      lastName: userProfile.lastName,
-      email: email,
-      startDate: startDate,
-      endDate: endDate,
-      quantity: quantity,
-      location: location,
-      signature: signature,
-      termsAndConditions: termsAndConditions,
+    const subscription = {
+      subscriptionType: subscriptionType,
+      subscriptionDuration: subscriptionDuration,
+      endDate: new Date(
+        new Date().getTime() + subscriptionDuration * 24 * 60 * 60 * 1000
+      ),
       txRef: txRef,
       userId: user.id,
     };
 
-    await Booking.create(booking);
+    await Subscription.create(subscription);
+
+    let subscriptionAmount = 0;
+
+    if (subscriptionType === "Basic") {
+      subscriptionAmount = 500;
+    }
+    if (subscriptionType === "Standard") {
+      subscriptionAmount = 1000;
+    }
+    if (subscriptionType === "Premium") {
+      subscriptionAmount = 1500;
+    }
 
     let chapaRequestData = {
-      amount: equipment.pricePerHour * quantity, // Assuming equipment price is in the database
+      amount: subscriptionAmount,
       tx_ref: txRef,
       currency: "ETB",
       email: user.email,
@@ -81,8 +55,8 @@ export const createBooking = async (req, res) => {
       callback_url:
         "https://dozer-backend-tech-gem.onrender.com/api/v1/bookings/webhook",
       // return_url: "",
-      // "customization[title]": "Payment for my favourite merchant",
-      // "customization[description]": "I love online payments",
+      "customization[title]": "Subscription Payment",
+      "customization[description]": "Subscription + " + subscriptionType,
     };
 
     const response = await axios.post(
@@ -98,7 +72,7 @@ export const createBooking = async (req, res) => {
 
     if (response.data.status === "success") {
       return res.json({
-        msg: "Equipment Booked successfully. Proceed to payment.",
+        msg: "Subscription initialized successfully. Proceed to payment.",
         paymentUrl: response.data.data.checkout_url,
       });
     } else {
@@ -114,9 +88,9 @@ export const createBooking = async (req, res) => {
   }
 };
 
-export const handleWebhook = async (req, res) => {
+export const verifySubscription = async (req, res) => {
   try {
-    //validate event
+    // Validate event
     console.log("Request", process.env.CHAPA_WEBHOOK_SECRET, req);
     const hash = crypto
       .createHmac("sha256", process.env.CHAPA_WEBHOOK_SECRET)
@@ -129,17 +103,59 @@ export const handleWebhook = async (req, res) => {
       const event = req.body;
       console.log("Event", event);
       const { tx_ref } = event;
-      const book = await Booking.findOne({
-        txRef: tx_ref,
+
+      const subscription = await Subscription.findOne({
+        where: { txRef: tx_ref },
       });
 
-      // change payment status to completed
-      if (book && book.paymentStatus == "Pending") {
-        book.paymentStatus = "Approved";
-        await book.save();
+      if (!subscription) {
+        return res.status(404).json({
+          msg: "Subscription not found",
+        });
       }
 
-      return res.sendStatus(200);
+      // Verify payment and update subscription status
+      if (subscription.paymentStatus === "Pending") {
+        const verifiedData = await verifyPayment(
+          tx_ref,
+          req.headers["x-chapa-signature"],
+          req.body
+        );
+
+        if (verifiedData.status === "success") {
+          subscription.paymentStatus = "Approved";
+          subscription.status = "Active";
+          await subscription.save();
+
+          // Update user subscription status
+          const user = await User.findOne({
+            where: { id: subscription.userId },
+          });
+
+          if (user) {
+            user.isSubscribed = true;
+            await user.save();
+          } else {
+            return res.status(404).json({
+              msg: "User not found",
+            });
+          }
+
+          return res.sendStatus(200);
+        } else {
+          return res.status(400).json({
+            msg: "Payment verification failed",
+          });
+        }
+      } else {
+        return res.status(400).json({
+          msg: "Subscription payment status is not pending",
+        });
+      }
+    } else {
+      return res.status(400).json({
+        msg: "Invalid signature",
+      });
     }
   } catch (error) {
     console.log(error);
@@ -149,7 +165,7 @@ export const handleWebhook = async (req, res) => {
   }
 };
 
-// Dublicate code same as handleWebhook
+// Duplicate code same as verifySubscription
 export const verifyPayment = async (req, res) => {
   try {
     //validate that this was indeed sent by Chapa's server
@@ -161,7 +177,7 @@ export const verifyPayment = async (req, res) => {
     if (hash == req.headers["x-chapa-signature"]) {
       // Retrieve the request's body
       const event = req.body;
-      console.log(event)
+      console.log(event);
 
       const { tx_ref, status } = event;
       if (status == "success" && tx_ref) {
@@ -180,18 +196,18 @@ export const verifyPayment = async (req, res) => {
           // if successful find the book
           if (response.data["status"] == "success") {
             let tx_ref = response.data["data"]["tx_ref"];
-            const book = await Booking.findOne({
+            const subscription = await Subscription.findOne({
               txRef: tx_ref,
             });
             // check if the book doesn't exist or payment status is not pending
-            if (!book || book.paymentStatus != "pending") {
+            if (!subscription || subscription.paymentStatus != "pending") {
               // Return a response to acknowledge receipt of the event
               return res.sendStatus(200);
             }
             // change payment status to completed
-            if (book.paymentStatus == "pending") {
-              book.paymentStatus = "completed";
-              await book.save();
+            if (subscription.paymentStatus == "pending") {
+              subscription.paymentStatus = "completed";
+              await subscription.save();
               // Return a response to acknowledge receipt of the event
               return res.sendStatus(200);
             }
@@ -203,12 +219,13 @@ export const verifyPayment = async (req, res) => {
     return res.status(500).json({ msg: err.message });
   }
 };
-export const getAllBookings = async (req, res) => {
+
+export const getAllSubscriptions = async (req, res) => {
   try {
-    const bookings = await Booking.findAll();
-    res.status(200).json({ status: "success", bookings });
+    const subscriptions = await Subscription.findAll();
+    res.status(200).json({ status: "success", subscriptions });
   } catch (error) {
-    console.error("Error in getAllBookings:", error);
+    console.error("Error in getAllSubscriptions:", error);
     res.status(StatusCodes.BAD_REQUEST).json({ errors: errors.array()[0].msg });
   }
 };

@@ -50,6 +50,11 @@ export default {
         allowNull: false,
         defaultValue: false,
       },
+      participants: {
+        type: Sequelize.ARRAY(Sequelize.UUID),
+        allowNull: false,
+        defaultValue: [],
+      },
       userId: {
         type: Sequelize.UUID,
         references: {

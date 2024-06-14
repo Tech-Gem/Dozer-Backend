@@ -1,8 +1,9 @@
 import admin from "firebase-admin";
-import serviceAccount from "./dozerAccountKey.json" assert { type: "json" };
+import serviceAccount from "./config/dozerAccountKey.json" assert { type: "json" };
 // import { WebSocketServer } from "ws";
 import faker from "faker";
 import { v4 as uuidv4 } from "uuid";
+import bcrypt from "bcryptjs";
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -111,7 +112,7 @@ const seedUsers = async () => {
   const roles = ["user", "renter"];
   const users = [];
 
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 10; i++) {
     users.push({
       id: uuidv4(),
       role: faker.random.arrayElement(roles),
@@ -120,6 +121,7 @@ const seedUsers = async () => {
       phoneNumber: faker.phone.phoneNumber(),
     });
   }
+
   await db.User.bulkCreate(users);
   const createdUsers = await db.User.findAll({ attributes: ["id", "role"] });
   const userIds = createdUsers.map((user) => user.id);
@@ -224,17 +226,31 @@ const seedEquipment = async (renterIds) => {
     "https://t3.ftcdn.net/jpg/03/54/46/90/240_F_354469024_xMWeeFZTyhqpQ4G6FOQma1FSJ9FnkIBY.jpg",
   ];
 
+  const equipmentAddress = [
+    "Addis Ketema",
+    "Akaky Kaliti",
+    "Arada",
+    "Bole",
+    "Gullele",
+    "Kirkos",
+    "Kolfe Keranio",
+    "Lideta",
+    "Lemi-Kura",
+    "Nifas Silk-Lafto",
+    "Yeka",
+  ];
+
   const equipment = [];
 
   renterIds.forEach((renterId) => {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 3; i++) {
       const category = faker.random.arrayElement(categories);
       equipment.push({
         id: uuidv4(),
         name: faker.random.arrayElement(equipmentNames),
         quantity: faker.datatype.number({ min: 1, max: 10 }),
         pricePerHour: faker.datatype.number({ min: 100, max: 1000 }), // Price range from hundreds to thousands
-        location: faker.address.city(),
+        location: faker.random.arrayElement(equipmentAddress),
         description: faker.lorem.sentence(),
         category: category,
         image: [faker.random.arrayElement(equipmentImages)],
@@ -287,7 +303,7 @@ const seedBookings = async () => {
 
   const bookings = [];
 
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 10; i++) {
     const equipment = faker.random.arrayElement(equipments);
     const user = faker.random.arrayElement(users);
     const userProfile = faker.random.arrayElement(usersProfiles);
@@ -320,7 +336,8 @@ const seedBookings = async () => {
 };
 
 const seedData = async () => {
-  // await deleteSeedData();
+  await deleteSeedData();
+  await seedAdminUser();
   const { userIds, renterIds } = await seedUsers();
   console.log("User IDs:", userIds); // Log to verify
   console.log("Renter IDs:", renterIds); // Log to verify
@@ -335,7 +352,6 @@ const seedData = async () => {
 
 db.sequelize.sync().then(() => {
   app.listen(process.env.PORT, () => {
-    seedAdminUser();
     seedData();
 
     console.log(`Server running on port ${process.env.PORT}`);

@@ -1,10 +1,40 @@
-import { User, UserProfile } from "../models/index.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { User } from "../models/index.js"; // Adjust the path based on your project structure
 
-const verifyRenter = async (req, res) => {
+export const adminLogin = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.scope("withPassword").findOne({
+      where: { email, role: "admin" },
+    });
+    if (!user) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.json({ token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const verifyRenter = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Find the renter by ID
     const user = await User.findOne({
       where: {
         id,
@@ -15,26 +45,29 @@ const verifyRenter = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Update the verification status
-    const user_profile = await UserProfile.findOne({
+    const userProfile = await UserProfile.findOne({
       where: { userId: id },
     });
 
-    if (!user_profile) {
+    if (!userProfile) {
       return res.status(404).json({ error: "User profile not found" });
     }
 
+    if (!user.isSubscribed) {
+      return res.status(400).json({
+        error: "User must be subscribed to verify as a renter",
+      });
+    }
+
     user.role = "renter";
-    user_profile.verifiedRenter = true;
+    userProfile.verifiedRenter = true;
 
     await user.save();
-    await user_profile.save();
+    await userProfile.save();
 
-    res.json({ message: "User account verified to Renter successfully" });
+    res.json({ message: "User account verified as renter successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-export default verifyRenter;

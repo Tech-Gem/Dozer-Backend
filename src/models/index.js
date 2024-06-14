@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import Sequelize from "sequelize";
 import process from "process";
-import dbConfig from "../config.json" assert { type: "json" };
+import dbConfig from "../config/config.json" assert { type: "json" };
 import { validationResult } from "express-validator";
 import { StatusCodes } from "http-status-codes";
 
@@ -66,6 +66,7 @@ export const Notification = db.Notification;
 export const Bidding = db.Bidding;
 export const Bidder = db.Bidder;
 export const BidSpace = db.BidSpace;
+export const Subscription = db.Subscription;
 
 export default db;
 

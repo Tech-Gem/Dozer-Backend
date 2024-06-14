@@ -31,6 +31,10 @@ export default {
         values: ["admin", "user", "renter"],
         defaultValue: "user",
       },
+      isSubscribed: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

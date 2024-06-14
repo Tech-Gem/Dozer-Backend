@@ -49,23 +49,43 @@ export const createEquipment = async (req, res, next) => {
 
 export const getAllEquipments = async (req, res) => {
   try {
-    const equipments = await Equipment.findAll();
+    const equipments = await Equipment.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ["phoneNumber"], // Include only the phone number
+        },
+      ],
+    });
     res.status(StatusCodes.OK).json({ status: "success", equipments });
   } catch (error) {
-    res.status(StatusCodes.BAD_REQUEST).json({ errors: errors.array()[0].msg });
+    res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
 };
 
 export const getEquipmentById = async (req, res) => {
   try {
     const { id } = req.params;
-    const equipment = await Equipment.findByPk(id);
+    const equipment = await Equipment.findByPk(id, {
+      include: [
+        {
+          model: User,
+          attributes: ["phoneNumber"], // Include only the phone number
+        },
+      ],
+    });
+
+    if (!equipment) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ error: "Equipment not found" });
+    }
+
     res.status(StatusCodes.OK).json({ status: "success", equipment });
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
 };
-
 export const getAllAvailableEquipments = async (req, res) => {
   try {
     const availableEquipments = await Equipment.findAll({

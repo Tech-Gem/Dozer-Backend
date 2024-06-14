@@ -2,20 +2,19 @@ import express from "express";
 const router = express.Router();
 
 import {
-  createBooking,
-  verifyPayment,
-  getAllBookings,
-  handleWebhook,
-} from "../controllers/booking.controller.js";
+  createSubscription,
+  verifySubscription,
+  getAllSubscriptions,
+} from "../controllers/subscription.controller.js";
 
 import { authenticate } from "../middlewares/authentication.middlewares.js";
 
 router
   .route("/")
-  .post(authenticate, createBooking)
-  .get(authenticate, getAllBookings);
+  .post(authenticate, createSubscription)
+  .get(authenticate, getAllSubscriptions);
 
-router.route("/webhook").post(handleWebhook);
+router.route("/verifyPayment").post(verifySubscription);
 
 // router.get("/verifyPayment", authenticate, verifyPayment);
 

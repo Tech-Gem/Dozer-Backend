@@ -9,10 +9,6 @@ export default {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      comment: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-      },
       rating: {
         type: Sequelize.FLOAT,
         allowNull: false,
@@ -20,6 +16,10 @@ export default {
           min: 1,
           max: 5,
         },
+      },
+      comment: {
+        type: Sequelize.TEXT,
+        allowNull: true,
       },
       userId: {
         type: Sequelize.UUID,
@@ -35,7 +35,6 @@ export default {
           key: "id",
         },
       },
-
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

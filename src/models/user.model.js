@@ -56,6 +56,10 @@ export default (sequelize, DataTypes) => {
         values: ["admin", "user", "renter"],
         defaultValue: "user",
       },
+      isSubscribed: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
     },
     {
       sequelize,
