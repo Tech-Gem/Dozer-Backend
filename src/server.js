@@ -337,17 +337,17 @@ const seedBookings = async () => {
 
 const seedData = async () => {
   await deleteSeedData();
-  await seedAdminUser();
-  const { userIds, renterIds } = await seedUsers();
-  console.log("User IDs:", userIds); // Log to verify
-  console.log("Renter IDs:", renterIds); // Log to verify
-  if (renterIds.length > 0) {
-    await seedEquipment(renterIds);
-  }
-  if (userIds.length > 0) {
-    await seedUserProfiles(userIds);
-  }
-  await seedBookings();
+  // await seedAdminUser();
+  // const { userIds, renterIds } = await seedUsers();
+  // console.log("User IDs:", userIds); // Log to verify
+  // console.log("Renter IDs:", renterIds); // Log to verify
+  // if (renterIds.length > 0) {
+  //   await seedEquipment(renterIds);
+  // }
+  // if (userIds.length > 0) {
+  //   await seedUserProfiles(userIds);
+  // }
+  // await seedBookings();
 };
 
 db.sequelize.sync().then(() => {
