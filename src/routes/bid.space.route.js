@@ -25,3 +25,4 @@ router
   .delete(authenticate, deleteBidSpace);
 
 export default router;
+

@@ -5,17 +5,20 @@ import {
   getRenters,
   deleteUser,
 } from "../controllers/user.controller.js";
-import { authenticate } from "../middlewares/authentication.middlewares.js";
+import {
+  authenticate,
+  authorize,
+} from "../middlewares/authentication.middlewares.js";
 
 const router = express.Router();
 
-router.route("/").get(authenticate, getUsers);
+router.route("/").get(authenticate, authorize("admin"), getUsers);
 
-router.get("/renters", authenticate, getRenters);
+router.get("/renters", authenticate, authorize("admin"), getRenters);
 
 router
   .route("/:id")
-  .get(authenticate, getUser)
-  .delete(authenticate, deleteUser);
+  .get(authenticate, authorize("admin"), getUser)
+  .delete(authenticate, authorize("admin"), deleteUser);
 
 export default router;
