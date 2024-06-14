@@ -108,54 +108,12 @@ export const verifySubscription = async (req, res) => {
         where: { txRef: tx_ref },
       });
 
-      if (!subscription) {
-        return res.status(404).json({
-          msg: "Subscription not found",
-        });
+      if (subscription && subscription.paymentStatus === "Pending") {
+        subscription.paymentStatus = "Approved";
+        subscription.subscriptionStatus = "Active";
+        await subscription.save();
       }
-
-      // Verify payment and update subscription status
-      if (subscription.paymentStatus === "Pending") {
-        const verifiedData = await verifyPayment(
-          tx_ref,
-          req.headers["x-chapa-signature"],
-          req.body
-        );
-
-        if (verifiedData.status === "success") {
-          subscription.paymentStatus = "Approved";
-          subscription.subscriptionStatus = "Active";
-          await subscription.save();
-
-          // Update user subscription status
-          const user = await User.findOne({
-            where: { id: subscription.userId },
-          });
-
-          if (user) {
-            user.isSubscribed = true;
-            await user.save();
-          } else {
-            return res.status(404).json({
-              msg: "User not found",
-            });
-          }
-
-          return res.sendStatus(200);
-        } else {
-          return res.status(400).json({
-            msg: "Payment verification failed",
-          });
-        }
-      } else {
-        return res.status(400).json({
-          msg: "Subscription payment status is not pending",
-        });
-      }
-    } else {
-      return res.status(400).json({
-        msg: "Invalid signature",
-      });
+      return res.sendStatus(200);
     }
   } catch (error) {
     console.log(error);
