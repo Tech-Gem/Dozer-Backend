@@ -47,24 +47,25 @@ export const getAllUserProfiles = async (req, res, next) => {
       },
     });
 
-    // Customized response object
     const formattedUserProfiles = allUserProfiles.map((profile) => {
       return {
         id: profile.id,
-        fullName: profile.fullName,
+        fullName: `${profile.firstName} ${profile.lastName}`,
         firstName: profile.firstName,
         lastName: profile.lastName,
         jobTitle: profile.jobTitle,
         image: profile.image,
-        email: profile.User.email,
-        phoneNumber: profile.User.phoneNumber,
+        email: profile.User ? profile.User.email : null,
+        phoneNumber: profile.User ? profile.User.phoneNumber : null,
+        isSubscribed: profile.User ? profile.User.isSubscribed : null,
         createdAt: profile.createdAt,
+        updatedAt: profile.updatedAt,
       };
     });
 
     res
       .status(StatusCodes.OK)
-      .json({ status: "success", formattedUserProfiles });
+      .json({ status: "success", userProfiles: formattedUserProfiles });
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
     next(error);
@@ -79,7 +80,7 @@ export const getUserProfileById = async (req, res, next) => {
       include: [
         {
           model: User,
-          attributes: ["email", "phoneNumber", "phoneNumberVerified", "role"],
+          attributes: ["email", "phoneNumber", "isSubscribed"],
         },
       ],
       attributes: {
@@ -93,21 +94,18 @@ export const getUserProfileById = async (req, res, next) => {
         .json({ message: "User profile not found" });
     }
 
-    // Customized response object
     const formattedProfile = {
       id: userProfile.id,
-      fullName: userProfile.fullName,
+      fullName: `${userProfile.firstName} ${userProfile.lastName}`,
       firstName: userProfile.firstName,
-      middleName: userProfile.middleName,
       lastName: userProfile.lastName,
       jobTitle: userProfile.jobTitle,
       image: userProfile.image,
-      createdAt: userProfile.createdAt,
-      updatedAt: userProfile.updatedAt,
       email: userProfile.User.email,
       phoneNumber: userProfile.User.phoneNumber,
-      phoneNumberVerified: userProfile.User.phoneNumberVerified,
-      role: userProfile.User.role,
+      isSubscribed: userProfile.User.isSubscribed,
+      createdAt: userProfile.createdAt,
+      updatedAt: userProfile.updatedAt,
     };
 
     res.status(StatusCodes.OK).json({ status: "success", formattedProfile });
