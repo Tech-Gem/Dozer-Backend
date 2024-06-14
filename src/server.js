@@ -1,5 +1,5 @@
 import admin from "firebase-admin";
-import serviceAccount from "./config/dozerAccountKey.json" assert { type: "json" };
+import serviceAccount from "./dozerAccountKey.json" assert { type: "json" };
 // import { WebSocketServer } from "ws";
 import faker from "faker";
 import { v4 as uuidv4 } from "uuid";
