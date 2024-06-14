@@ -74,6 +74,9 @@ export const userLogin = async (req, res, next) => {
     let user = await User.scope("withPassword").findOne({
       where: { phoneNumber },
     });
+    const userProfile = await UserProfile.findOne({
+      where: { userId: user.id },
+    });
     if (!user) {
       throw new CustomError("Invalid credentials", httpStatus.UNAUTHORIZED);
     }
@@ -90,7 +93,9 @@ export const userLogin = async (req, res, next) => {
     user = user.toJSON();
     delete user.password;
 
-    res.status(httpStatus.OK).json({ status: "success", token, user });
+    res
+      .status(httpStatus.OK)
+      .json({ status: "success", token, user, userProfile });
   } catch (error) {
     next(error);
   }

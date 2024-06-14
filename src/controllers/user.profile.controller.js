@@ -15,6 +15,16 @@ export const createUserProfile = async (req, res, next) => {
         .json({ message: "User not found" });
     }
 
+    const existingUserProfile = await UserProfile.findOne({
+      where: { userId },
+    });
+
+    if (existingUserProfile) {
+      return res
+        .status(StatusCodes.CONFLICT)
+        .json({ message: "User profile already exists" });
+    }
+
     const newUserProfile = await UserProfile.create({
       userId,
       firstName,
@@ -55,9 +65,9 @@ export const getAllUserProfiles = async (req, res, next) => {
         lastName: profile.lastName,
         jobTitle: profile.jobTitle,
         image: profile.image,
-        email: profile.User ? profile.User.email : null,
-        phoneNumber: profile.User ? profile.User.phoneNumber : null,
-        isSubscribed: profile.User ? profile.User.isSubscribed : null,
+        email: profile.User.email,
+        phoneNumber: profile.User.phoneNumber,
+        isSubscribed: profile.User.isSubscribed,
         createdAt: profile.createdAt,
         updatedAt: profile.updatedAt,
       };
