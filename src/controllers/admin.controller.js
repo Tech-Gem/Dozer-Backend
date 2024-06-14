@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { User } from "../models/index.js"; // Adjust the path based on your project structure
+import { User, UserProfile } from "../models/index.js"; // Adjust the path based on your project structure
 
 export const adminLogin = async (req, res) => {
   const { email, password } = req.body;

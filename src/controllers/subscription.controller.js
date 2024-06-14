@@ -53,7 +53,7 @@ export const createSubscription = async (req, res) => {
       last_name: userProfile.lastName,
       // phone_number: user.phoneNumber,
       callback_url:
-        "https://dozer-backend-tech-gem.onrender.com/api/v1/bookings/webhook",
+        "https://dozer-backend-tech-gem.onrender.com/api/v1/subscription/verifyPayment",
       // return_url: "",
       "customization[title]": "Subscription Payment",
       "customization[description]": "Subscription + " + subscriptionType,

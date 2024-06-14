@@ -29,11 +29,11 @@ const authenticate = async (req, res, next) => {
 // Authorization middleware
 const authorize = (...roles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.roleType)) {
+    if (!roles.includes(req.user.role)) {
       return next(
         createError(
           StatusCodes.FORBIDDEN,
-          `${req.user.roleType} is not authorized to access this route`
+          `${req.user.role} is not authorized to access this route`
         )
       );
     }
