@@ -4,58 +4,29 @@ import { StatusCodes } from "http-status-codes";
 
 export const createUserProfile = async (req, res, next) => {
   try {
-    const requiredFields = ["firstName", "lastName", "jobTitle"];
-    const missingFields = requiredFields.filter((field) => !req.body[field]);
-
-    if (missingFields.length > 0) {
-      const errorMessage = `The field${
-        missingFields.length > 1 ? "s" : ""
-      } ${missingFields.join(" and ")} ${
-        missingFields.length > 1 ? "are" : "is"
-      } required`;
-      return res.status(StatusCodes.BAD_REQUEST).json({ error: errorMessage });
-    }
-
+    const { firstName, lastName, jobTitle, image } = req.body;
     const userId = req.user.id;
 
-    if (!req.file || !req.file.buffer) {
-      throw new Error("Image buffer not found");
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "User not found" });
     }
 
-    const folderName = "userProfile";
-
-    // Upload the image to Cloudinary
-    // const cloudinaryResult = await uploadToCloudinary(
-    //   req.file.buffer,
-    //   folderName
-    // );
-
-    // Find or create the user profile associated with the user ID
-    const [userProfile, created] = await UserProfile.findOrCreate({
-      where: { userId },
-      defaults: {
-        firstName: req.body.firstName,
-        middleName: req.body.middleName || null,
-        lastName: req.body.lastName,
-        fullName: `${req.body.firstName} ${req.body.middleName} ${req.body.lastName}`,
-        jobTitle: req.body.jobTitle,
-        image: cloudinaryResult.secure_url || null,
-      },
+    const newUserProfile = await UserProfile.create({
+      userId,
+      firstName,
+      lastName,
+      jobTitle,
+      image,
     });
 
-    // If the profile was not created (i.e., it already existed), update the profile
-    if (!created) {
-      await userProfile.update({
-        firstName: req.body.firstName,
-        middleName: req.body.middleName || null,
-        lastName: req.body.lastName,
-        fullName: `${req.body.firstName} ${req.body.middleName} ${req.body.lastName}`,
-        jobTitle: req.body.jobTitle,
-        image: cloudinaryResult.secure_url || null,
-      });
-    }
-
-    res.status(StatusCodes.CREATED).json({ status: "success", userProfile });
+    res.status(StatusCodes.CREATED).json({
+      status: "success",
+      newUserProfile,
+    });
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
     next(error);

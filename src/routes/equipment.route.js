@@ -21,8 +21,8 @@ import {
 
 router
   .route("/")
-  .get(authenticate, getAllEquipments)
-  .post(authenticate, authorize("renter"), createEquipment);
+  .post(authenticate, createEquipment)
+  .get(authenticate, getAllEquipments);
 
 router.get("/available", authenticate, getAllAvailableEquipments);
 router.get("/by-location/:location", authenticate, searchEquipmentByLocation);
@@ -30,7 +30,7 @@ router.get("/by-category/:category", authenticate, searchEquipmentByCategory);
 
 router
   .route("/:id")
-  .get(authenticate, authorize("renter", "user"), getEquipmentById)
+  .get(authenticate, getEquipmentById)
   .patch(authenticate, authorize("renter"), updateEquipment)
   .delete(authenticate, authorize("renter"), deleteEquipment);
 

@@ -57,6 +57,7 @@ export const getAllEquipments = async (req, res) => {
         },
       ],
     });
+
     res.status(StatusCodes.OK).json({ status: "success", equipments });
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
