@@ -342,6 +342,7 @@ const testUsers = [
     password: "hello1234",
     firstName: "Christina",
     lastName: "Hailu",
+    role: "user",
   },
   {
     phoneNumber: "0904431921",
@@ -349,6 +350,7 @@ const testUsers = [
     password: "hello1234",
     firstName: "Hiwot",
     lastName: "Derese",
+    role: "renter",
   },
   {
     phoneNumber: "0925898533",
@@ -356,6 +358,7 @@ const testUsers = [
     password: "hello1234",
     firstName: "Hayat",
     lastName: "Tofik",
+    role: "user",
   },
 ];
 
@@ -364,7 +367,6 @@ const seedTestUsers = async () => {
     const users = testUsers.map((user) => ({
       ...user,
       id: uuidv4(),
-      role: "user", // Assuming the role for these specific users is 'user'
     }));
 
     for (let user of users) {
@@ -377,7 +379,7 @@ const seedTestUsers = async () => {
       }
     }
 
-    console.log("Specific users seeded successfully.");
+    console.log("Test users seeded successfully.");
   } catch (error) {
     console.error("Error seeding test users:", error);
   }
