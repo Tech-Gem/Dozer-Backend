@@ -124,31 +124,31 @@ db.sequelize.sync().then(() => {
     console.log(`Server running on port ${process.env.PORT}`);
   });
 
-  io.on("connection", (socket) => {
-    console.log("a user connected");
+  // io.on("connection", (socket) => {
+  //   console.log("a user connected");
 
-    socket.on("getTime", async (bidId) => {
-      try {
-        // Fetch the bid from the database
-        const bid = await Bid.findByPk(bidId);
-        if (bid) {
-          const timeElapsed =
-            (Date.now() - new Date(bid.createdAt).getTime()) / 1000;
-          const timeLeft = bid.duration - timeElapsed;
-          // Emit remaining time to the client
-          socket.emit("remainingTime", timeLeft > 0 ? timeLeft : 0);
-        } else {
-          // Emit an error message if the bid is not found
-          socket.emit("error", "Bid not found");
-        }
-      } catch (error) {
-        console.error("Error fetching bid:", error);
-        socket.emit("error", "Internal server error");
-      }
-    });
+  //   socket.on("getTime", async (bidId) => {
+  //     try {
+  //       // Fetch the bid from the database
+  //       const bid = await RealTimeBid.findByPk(bidId);
+  //       if (bid) {
+  //         const timeElapsed =
+  //           (Date.now() - new Date(bid.createdAt).getTime()) / 1000;
+  //         const timeLeft = bid.duration - timeElapsed;
+  //         // Emit remaining time to the client
+  //         socket.emit("remainingTime", timeLeft > 0 ? timeLeft : 0);
+  //       } else {
+  //         // Emit an error message if the bid is not found
+  //         socket.emit("error", "Bid not found");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching bid:", error);
+  //       socket.emit("error", "Internal server error");
+  //     }
+  //   });
 
-    socket.on("disconnect", () => {
-      console.log("user disconnected");
-    });
-  });
+  //   socket.on("disconnect", () => {
+  //     console.log("user disconnected");
+  //   });
+  // });
 });
