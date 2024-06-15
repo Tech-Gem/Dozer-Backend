@@ -1,4 +1,4 @@
-import { Equipment } from "../models/index.js";
+import { User, Equipment, UserProfile } from "../models/index.js";
 import { StatusCodes } from "http-status-codes";
 // import { uploadToCloudinary } from "../middlewares/multer.middlewares.js";
 
@@ -53,17 +53,46 @@ export const getAllEquipments = async (req, res) => {
       include: [
         {
           model: User,
-          attributes: ["phoneNumber"], // Include only the phone number
+          attributes: ["phoneNumber"],
+          include: [
+            {
+              model: UserProfile,
+              attributes: ["firstName", "lastName"],
+            },
+          ],
         },
       ],
     });
 
-    res.status(StatusCodes.OK).json({ status: "success", equipments });
+    const formattedEquipments = equipments.map((equipment) => {
+      return {
+        id: equipment.id,
+        name: equipment.name,
+        quantity: equipment.quantity,
+        pricePerHour: equipment.pricePerHour,
+        rating: equipment.rating,
+        location: equipment.location,
+        description: equipment.description,
+        category: equipment.category,
+        image: equipment.image,
+        capacity: equipment.capacity,
+        model: equipment.model,
+        specifications: equipment.specifications,
+        transportation: equipment.transportation,
+        isBooked: equipment.isBooked,
+        phoneNumber: equipment.User ? equipment.User.phoneNumber : null,
+        owner:
+          equipment.User && equipment.User.UserProfile
+            ? `${equipment.User.UserProfile.firstName} ${equipment.User.UserProfile.lastName}`
+            : null,
+      };
+    });
+
+    res.status(StatusCodes.OK).json({ status: "success", formattedEquipments });
   } catch (error) {
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
 };
-
 export const getEquipmentById = async (req, res) => {
   try {
     const { id } = req.params;

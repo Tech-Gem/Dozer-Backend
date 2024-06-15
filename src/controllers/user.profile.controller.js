@@ -65,7 +65,7 @@ export const getAllUserProfiles = async (req, res, next) => {
         lastName: profile.lastName,
         jobTitle: profile.jobTitle,
         image: profile.image,
-        email: profile.User.email || null,
+        email: profile.User.email || "",
         phoneNumber: profile.User.phoneNumber,
         isSubscribed: profile.User.isSubscribed,
         createdAt: profile.createdAt,

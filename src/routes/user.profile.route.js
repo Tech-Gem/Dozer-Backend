@@ -22,7 +22,7 @@ router
 
 router
   .route("/:id")
-  .get(authenticate, getUserProfileById)
+  .get(getUserProfileById)
   .put(authenticate, updateUserProfile)
   .delete(authenticate, deleteUserProfile);
 
