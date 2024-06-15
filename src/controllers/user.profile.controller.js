@@ -145,7 +145,7 @@ export const updateUserProfile = async (req, res, next) => {
       include: [
         {
           model: User,
-          attributes: ["email", "phoneNumber", "phoneNumberVerified", "role"],
+          attributes: ["email", "phoneNumber", "isSubscribed"],
         },
       ],
       attributes: {
