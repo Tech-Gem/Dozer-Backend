@@ -17,17 +17,6 @@ export default (sequelize, DataTypes) => {
         primaryKey: true,
         allowNull: false,
       },
-      userName: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        required: true,
-      },
-      roomId: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        primaryKey: true,
-        allowNull: false,
-      },
       title: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -38,20 +27,10 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
         required: true,
       },
-      priceMin: {
-        type: DataTypes.DECIMAL(10, 2),
+      duration: {
+        type: DataTypes.INTEGER,
         allowNull: false,
-        defaultValue: 0.0,
-      },
-      priceMax: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
-        defaultValue: 0.0,
-      },
-      status: {
-        type: DataTypes.ENUM("Open", "closed"),
-        allowNull: false,
-        defaultValue: "Open",
+        required: true,
       },
       userId: {
         type: DataTypes.UUID,

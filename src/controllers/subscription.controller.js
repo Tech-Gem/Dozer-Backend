@@ -193,3 +193,21 @@ export const getAllSubscriptions = async (req, res) => {
     res.status(StatusCodes.BAD_REQUEST).json({ errors: errors.array()[0].msg });
   }
 };
+
+// create a function to know if the user is subscribed or not
+export const isSubscribed = async (req, res) => {
+  try {
+    const user = req.user;
+    const subscription = await Subscription.findOne({
+      where: { userId: user.id },
+    });
+    if (subscription) {
+      return res.json({ isSubscribed: true });
+    } else {
+      return res.json({ isSubscribed: false });
+    }
+  } catch (error) {
+    console.error("Error in isSubscribed:", error);
+    res.status(StatusCodes.BAD_REQUEST).json({ errors: errors.array()[0].msg });
+  }
+};
