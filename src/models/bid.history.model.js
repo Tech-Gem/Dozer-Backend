@@ -21,54 +21,20 @@ export default (sequelize, DataTypes) => {
         primaryKey: true,
         allowNull: false,
       },
-      firstName: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        required: true,
-      },
-      lastName: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        required: true,
-      },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      phone: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        required: false,
-      },
       offerPrice: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
         defaultValue: 0.0,
-      },
-      offerDescription: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        required: true,
-      },
-      condition: {
-        type: DataTypes.ENUM(
-          "Best Condition",
-          "Good Condition",
-          "Fair Condition",
-          "Poor Condition"
-        ),
-        allowNull: false,
-        defaultValue: "Good Condition",
       },
       winningStatus: {
         type: DataTypes.ENUM("neutral", "win", "lose"),
         allowNull: false,
         defaultValue: "neutral",
       },
-      biddingId: {
+      bidId: {
         type: DataTypes.UUID,
         references: {
-          model: "biddings",
+          model: "realTimeBids",
           key: "id",
         },
         onDelete: "CASCADE",
@@ -84,9 +50,9 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Bidder",
-      tableName: "bidders",
+      modelName: "BidHistory",
+      tableName: "bidHistories",
     }
   );
-  return Bidder;
+  return BidHistory;
 };

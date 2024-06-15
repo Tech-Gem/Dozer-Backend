@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import faker from "faker";
-import db from "../models";
+import db from "../models/index.js";
 
 export const testUsers = [
   {

@@ -1,5 +1,5 @@
 import faker from "faker";
-import db from "../models";
+import db from "../models/index.js";
 import { v4 as uuidv4 } from "uuid";
 
 export const seedBookings = async () => {
