@@ -67,6 +67,8 @@ export const Bidding = db.Bidding;
 export const Bidder = db.Bidder;
 export const BidSpace = db.BidSpace;
 export const Subscription = db.Subscription;
+export const RealTimeBid = db.RealTimeBid;
+export const BidHistory = db.BidHistory;
 
 export default db;
 
