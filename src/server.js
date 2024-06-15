@@ -335,9 +335,58 @@ const seedBookings = async () => {
   await db.Booking.bulkCreate(bookings);
 };
 
+const testUsers = [
+  {
+    phoneNumber: "0912640427",
+    email: "Christinahailu123@gmail.com",
+    password: "hello1234",
+    firstName: "Christina",
+    lastName: "Hailu",
+  },
+  {
+    phoneNumber: "0904431921",
+    email: "Hiwotderese123@gmail.com",
+    password: "hello1234",
+    firstName: "Hiwot",
+    lastName: "Derese",
+  },
+  {
+    phoneNumber: "0925898533",
+    email: "Hayattofik123@gmail.com",
+    password: "hello1234",
+    firstName: "Hayat",
+    lastName: "Tofik",
+  },
+];
+
+const seedTestUsers = async () => {
+  try {
+    const users = testUsers.map((user) => ({
+      ...user,
+      id: uuidv4(),
+      role: "user", // Assuming the role for these specific users is 'user'
+    }));
+
+    for (let user of users) {
+      const [existingUser, created] = await db.User.findOrCreate({
+        where: { email: user.email },
+        defaults: user,
+      });
+      if (!created) {
+        console.log(`User with email ${user.email} already exists.`);
+      }
+    }
+
+    console.log("Specific users seeded successfully.");
+  } catch (error) {
+    console.error("Error seeding test users:", error);
+  }
+};
+
 const seedData = async () => {
-  await deleteSeedData();
+  // await deleteSeedData();
   await seedAdminUser();
+  await seedTestUsers();
   const { userIds, renterIds } = await seedUsers();
   console.log("User IDs:", userIds); // Log to verify
   console.log("Renter IDs:", renterIds); // Log to verify
