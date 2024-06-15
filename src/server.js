@@ -384,7 +384,7 @@ const seedTestUsers = async () => {
 };
 
 const seedData = async () => {
-  // await deleteSeedData();
+  await deleteSeedData();
   await seedAdminUser();
   await seedTestUsers();
   const { userIds, renterIds } = await seedUsers();
