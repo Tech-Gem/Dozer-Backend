@@ -4,7 +4,7 @@ export default (sequelize, DataTypes) => {
   class BidHistory extends Model {
     static associate(models) {
       BidHistory.belongsTo(models.RealTimeBid, {
-        foreignKey: "biddingId",
+        foreignKey: "realTimeBidsId",
         onDelete: "CASCADE",
       });
       BidHistory.belongsTo(models.User, {
