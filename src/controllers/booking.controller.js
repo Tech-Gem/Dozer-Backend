@@ -113,7 +113,7 @@ export const createBooking = async (req, res) => {
       "Booking Requested",
       `A new booking request has been made for your equipment: ${equipment.name}. Amount: ${equipment.quantity}.`,
       { type: "BookingRequest", equipment: equipment.name },
-      process.env.FIREBASE_DEVICE1_TOKEN
+      process.env.FIREBASE_DEVICE2_TOKEN
     );
 
     return res.json({
