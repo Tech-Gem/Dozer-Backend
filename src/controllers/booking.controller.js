@@ -1,8 +1,9 @@
-import { Booking, Equipment, UserProfile } from "../models/index.js"; // Import models
+import { Booking, Equipment, UserProfile, User } from "../models/index.js"; // Import models
 import { StatusCodes } from "http-status-codes"; // Import status codes
 import axios from "axios"; // Import axios
 import { nanoid } from "nanoid"; // Import nanoid
 import crypto from "crypto";
+import { sendNotification } from "../controllers/notification.controller.js";
 
 export const createBooking = async (req, res) => {
   try {
@@ -52,6 +53,7 @@ export const createBooking = async (req, res) => {
     const txRef = nanoid();
 
     const booking = {
+      ...req.body,
       equipmentId: equipmentId,
       equipmentName: equipment.name,
       equipmentPrice: equipment.pricePerHour,
@@ -66,46 +68,59 @@ export const createBooking = async (req, res) => {
       termsAndConditions: termsAndConditions,
       txRef: txRef,
       userId: user.id,
+      bookingStatus: "Pending",
     };
 
     await Booking.create(booking);
 
-    let chapaRequestData = {
-      amount: equipment.pricePerHour * quantity, // Assuming equipment price is in the database
-      tx_ref: txRef,
-      currency: "ETB",
-      email: user.email,
-      first_name: userProfile.firstName,
-      last_name: userProfile.lastName,
-      // phone_number: user.phoneNumber,
-      callback_url:
-        "https://dozer-backend-tech-gem.onrender.com/api/v1/bookings/webhook",
-      // return_url: "",
-      // "customization[title]": "Payment for my favourite merchant",
-      // "customization[description]": "I love online payments",
-    };
+    // let chapaRequestData = {
+    //   amount: equipment.pricePerHour * quantity, // Assuming equipment price is in the database
+    //   tx_ref: txRef,
+    //   currency: "ETB",
+    //   email: user.email,
+    //   first_name: userProfile.firstName,
+    //   last_name: userProfile.lastName,
+    //   // phone_number: user.phoneNumber,
+    //   callback_url:
+    //     "https://dozer-backend-tech-gem.onrender.com/api/v1/bookings/webhook",
+    //   // return_url: "",
+    //   // "customization[title]": "Payment for my favourite merchant",
+    //   // "customization[description]": "I love online payments",
+    // };
 
-    const response = await axios.post(
-      "https://api.chapa.co/v1/transaction/mobile-initialize",
-      chapaRequestData,
-      {
-        headers: {
-          Authorization: "Bearer " + process.env.CHAPA_SECRET_KEY,
-          "Content-Type": "application/json",
-        },
-      }
+    // const response = await axios.post(
+    //   "https://api.chapa.co/v1/transaction/mobile-initialize",
+    //   chapaRequestData,
+    //   {
+    //     headers: {
+    //       Authorization: "Bearer " + process.env.CHAPA_SECRET_KEY,
+    //       "Content-Type": "application/json",
+    //     },
+    //   }
+    // );
+
+    // if (response.data.status === "success") {
+    //   return res.json({
+    //     msg: "Equipment Booked successfully. Proceed to payment.",
+    //     paymentUrl: response.data.data.checkout_url,
+    //   });
+    // } else {
+    //   return res.status(500).json({
+    //     msg: "Something went wrong",
+    //   });
+    // }
+    const notificationResult = await sendNotification(
+      "Booking Requested",
+      `A new booking request has been made for your equipment: ${equipment.name}. Amount: ${equipment.quantity}.`,
+      { type: "BookingRequest", equipment: equipment.name },
+      process.env.FIREBASE_DEVICE1_TOKEN
     );
 
-    if (response.data.status === "success") {
-      return res.json({
-        msg: "Equipment Booked successfully. Proceed to payment.",
-        paymentUrl: response.data.data.checkout_url,
-      });
-    } else {
-      return res.status(500).json({
-        msg: "Something went wrong",
-      });
-    }
+    return res.json({
+      msg: "Booking requested successfully. Notification sent to the renter.",
+      notification: notificationResult.message,
+      booking,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -161,7 +176,7 @@ export const verifyPayment = async (req, res) => {
     if (hash == req.headers["x-chapa-signature"]) {
       // Retrieve the request's body
       const event = req.body;
-      console.log(event)
+      console.log(event);
 
       const { tx_ref, status } = event;
       if (status == "success" && tx_ref) {
@@ -210,5 +225,44 @@ export const getAllBookings = async (req, res) => {
   } catch (error) {
     console.error("Error in getAllBookings:", error);
     res.status(StatusCodes.BAD_REQUEST).json({ errors: errors.array()[0].msg });
+  }
+};
+
+export const confirmOrRejectBooking = async (req, res) => {
+  try {
+    const { bookingId, status } = req.body;
+
+    if (!bookingId || !["Confirmed", "Rejected"].includes(status)) {
+      return res.status(400).json({ msg: "Invalid booking ID or status" });
+    }
+
+    const booking = await Booking.findByPk(bookingId);
+    if (!booking) {
+      return res.status(404).json({ msg: "Booking not found" });
+    }
+
+    booking.bookingStatus = status;
+    await booking.save();
+
+    const user = await User.findByPk(booking.userId);
+    const notificationResult = await sendNotification(
+      `Booking ${status}`,
+      `Your booking for the equipment: ${
+        booking.equipmentName
+      } has been ${status.toLowerCase()}.`,
+      { type: "BookingStatus", status, equipment: booking.equipmentName },
+      process.env.FIREBASE_DEVICE1_TOKEN
+    );
+
+    return res.json({
+      msg: `Booking Request ${status.toLowerCase()}.`,
+      notification: notificationResult.message,
+      bookingStatus: user.bookingStatus,
+    });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ msg: error.message || "Internal server error" });
   }
 };

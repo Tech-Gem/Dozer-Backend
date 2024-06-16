@@ -4,6 +4,11 @@ const router = express.Router();
 import {
   createBooking,
   verifyPayment,
+  confirmOrRejectBooking,
+  generateLegalDocument,
+  agreeToTermsAndConditions,
+  generateInvoice,
+  initializePayment,
   getAllBookings,
   handleWebhook,
 } from "../controllers/booking.controller.js";
@@ -16,6 +21,8 @@ router
   .get(authenticate, getAllBookings);
 
 router.route("/webhook").post(handleWebhook);
+
+router.post("/confirm-or-reject", confirmOrRejectBooking);
 
 // router.get("/verifyPayment", authenticate, verifyPayment);
 
