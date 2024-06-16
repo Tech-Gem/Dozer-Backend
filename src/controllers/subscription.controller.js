@@ -7,8 +7,9 @@ import { sendNotification } from "../controllers/notification.controller.js";
 
 export const createSubscription = async (req, res) => {
   try {
-    const { subscriptionType, subscriptionDuration } = req.body;
+    const { subscriptionType } = req.body;
     const user = req.user;
+    const subscriptionDuration = 30;
 
     const userProfile = await UserProfile.findOne({
       where: { userId: req.user.id },
