@@ -72,15 +72,17 @@ export const createSubscription = async (req, res) => {
     );
 
     if (response.data.status === "success") {
-      await sendNotification(
+      const notificationResult = await sendNotification(
         "Subscription Successful",
         `You have successfully subscribed to the ${subscriptionType} plan.`,
         { type: "Subscription", subscriptionType },
-        process.env.FIREBASE_DEVICE1_TOKEN
+        process.env.FIREBASE_DEVICE_TOKEN
       );
+
       return res.json({
         msg: "Subscription initialized successfully. Proceed to payment.",
         paymentUrl: response.data.data.checkout_url,
+        notification: notificationResult.message, // Add notification message to the response
       });
     } else {
       return res.status(500).json({
