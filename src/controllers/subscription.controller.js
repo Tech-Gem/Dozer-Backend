@@ -76,7 +76,7 @@ export const createSubscription = async (req, res) => {
         "Subscription Successful",
         `You have successfully subscribed to the ${subscriptionType} plan.`,
         { type: "Subscription", subscriptionType },
-        process.env.FIREBASE_DEVICE_TOKEN
+        process.env.FIREBASE_DEVICE1_TOKEN
       );
       return res.json({
         msg: "Subscription initialized successfully. Proceed to payment.",
