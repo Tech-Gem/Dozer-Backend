@@ -30,3 +30,20 @@ export const sendBookingRequest = async (req, res) => {
       .json({ message: "Error sending message" });
   }
 };
+
+export const sendNotification = async (title, body, data, token) => {
+  try {
+    const message = {
+      notification: { title, body },
+      data,
+      token,
+    };
+
+    const response = await admin.messaging().send(message);
+    console.log("Successfully sent message:", response);
+    return { status: "success", message: "Message sent successfully" };
+  } catch (error) {
+    console.error("Error sending message:", error);
+    throw new Error("Error sending message");
+  }
+};
