@@ -5,10 +5,6 @@ import {
   createBooking,
   verifyPayment,
   confirmOrRejectBooking,
-  generateLegalDocument,
-  agreeToTermsAndConditions,
-  generateInvoice,
-  initializePayment,
   getAllBookings,
   handleWebhook,
 } from "../controllers/booking.controller.js";
