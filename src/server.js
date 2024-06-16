@@ -93,6 +93,7 @@ const deleteSeedData = async () => {
     await db.Booking.destroy({ where: {} });
     await db.Equipment.destroy({ where: {} });
     await db.Review.destroy({ where: {} });
+    await db.Subscription.destroy({ where: {} });
 
     console.log("All seed data deleted");
   } catch (error) {
