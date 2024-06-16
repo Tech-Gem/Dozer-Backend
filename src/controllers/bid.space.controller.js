@@ -24,7 +24,9 @@ export const createBidSpace = async (req, res) => {
       userId: userId,
     });
 
-    res.status(201).json({ status: "success", newBid });
+    res
+      .status(201)
+      .json({ status: "success", newBid, profileImage: user.image });
   } catch (error) {
     console.error("Error creating bid:", error);
     res.status(500).json({ error: "Internal server error" });
