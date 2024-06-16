@@ -225,6 +225,6 @@ export const isSubscribed = async (req, res) => {
     }
   } catch (error) {
     console.error("Error in isSubscribed:", error);
-    res.status(StatusCodes.BAD_REQUEST).json({ errors: errors.array()[0].msg });
+    res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
 };
