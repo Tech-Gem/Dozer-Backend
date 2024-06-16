@@ -56,7 +56,7 @@ export const createSubscription = async (req, res) => {
 
       callback_url:
         "https://dozer-backend-tech-gem.onrender.com/api/v1/subscription/verifyPayment",
-      return_url: "myapp://home?status=success",
+      // return_url: `myapp://home?status=success`,
       "customization[title]": "Subscription Payment",
       "customization[description]": "Subscription + " + subscriptionType,
     };
