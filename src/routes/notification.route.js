@@ -8,6 +8,6 @@ import {
 
 // POST send message
 router.route("/send-message").post(sendBookingRequest);
-router.route("/send-notification").post(sendNotification);
+// router.route("/send-notification").post(sendNotification);
 
 export default router;

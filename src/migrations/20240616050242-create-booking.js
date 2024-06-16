@@ -68,6 +68,11 @@ export default {
         allowNull: false,
         required: true,
       },
+      bookingStatus: {
+        type: Sequelize.ENUM("Pending", "Approved", "Rejected"),
+        allowNull: false,
+        defaultValue: "Pending",
+      },
       paymentStatus: {
         type: Sequelize.ENUM("Pending", "Approved", "Rejected"),
         allowNull: false,

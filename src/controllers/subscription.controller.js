@@ -3,7 +3,6 @@ import { StatusCodes } from "http-status-codes"; // Import status codes
 import axios from "axios"; // Import axios
 import { nanoid } from "nanoid"; // Import nanoid
 import crypto from "crypto";
-import { sendNotification } from "../controllers/notification.controller.js";
 
 export const createSubscription = async (req, res) => {
   try {
@@ -72,17 +71,9 @@ export const createSubscription = async (req, res) => {
     );
 
     if (response.data.status === "success") {
-      const notificationResult = await sendNotification(
-        "Subscription Successful",
-        `You have successfully subscribed to the ${subscriptionType} plan.`,
-        { type: "Subscription", subscriptionType },
-        process.env.FIREBASE_DEVICE1_TOKEN
-      );
-
       return res.json({
         msg: "Subscription initialized successfully. Proceed to payment.",
         paymentUrl: response.data.data.checkout_url,
-        notification: notificationResult.message, // Add notification message to the response
       });
     } else {
       return res.status(500).json({
@@ -99,18 +90,13 @@ export const createSubscription = async (req, res) => {
 
 export const verifySubscription = async (req, res) => {
   try {
-    // Validate event
-    console.log("Request", process.env.CHAPA_WEBHOOK_SECRET, req);
     const hash = crypto
       .createHmac("sha256", process.env.CHAPA_WEBHOOK_SECRET)
       .update(JSON.stringify(req.body))
       .digest("hex");
 
-    console.log("paymentlog", hash, req.headers["x-chapa-signature"]);
-    if (hash == req.headers["x-chapa-signature"]) {
-      // Retrieve the request's body
+    if (hash === req.headers["x-chapa-signature"]) {
       const event = req.body;
-      console.log("Event", event);
       const { tx_ref } = event;
 
       const subscription = await Subscription.findOne({
@@ -127,14 +113,34 @@ export const verifySubscription = async (req, res) => {
           user.isSubscribed = true;
           await user.save();
         }
+
+        // Send notification after payment verification
+        const notificationResult = await sendNotification(
+          "Subscription Activated",
+          `Your subscription to the ${subscription.subscriptionType} plan has been activated.`,
+          {
+            type: "Subscription",
+            subscriptionType: subscription.subscriptionType,
+          },
+          process.env.FIREBASE_DEVICE1_TOKEN
+        );
+
+        return res.json({
+          msg: "Subscription verified and activated successfully.",
+          notification: notificationResult.message,
+        });
       }
-      return res.sendStatus(200);
+      return res
+        .status(404)
+        .json({ msg: "Subscription not found or already processed" });
+    } else {
+      return res.status(400).json({ msg: "Invalid signature" });
     }
   } catch (error) {
     console.log(error);
-    return res.status(500).json({
-      msg: error.message || "Internal server error",
-    });
+    return res
+      .status(500)
+      .json({ msg: error.message || "Internal server error" });
   }
 };
 

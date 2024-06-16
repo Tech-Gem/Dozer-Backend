@@ -55,7 +55,7 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
         required: true,
       },
-      
+
       quantity: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -79,6 +79,11 @@ export default (sequelize, DataTypes) => {
       txRef: {
         type: DataTypes.STRING,
         required: true,
+      },
+      bookingStatus: {
+        type: DataTypes.ENUM("Pending", "Confirmed", "Rejected"),
+        allowNull: false,
+        defaultValue: "Pending",
       },
       paymentStatus: {
         type: DataTypes.ENUM("Pending", "Approved", "Rejected"),
