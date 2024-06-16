@@ -3,6 +3,7 @@ import { StatusCodes } from "http-status-codes"; // Import status codes
 import axios from "axios"; // Import axios
 import { nanoid } from "nanoid"; // Import nanoid
 import crypto from "crypto";
+import { sendNotification } from "../controllers/notification.controller.js";
 
 export const createSubscription = async (req, res) => {
   try {
