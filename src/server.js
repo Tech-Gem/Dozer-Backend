@@ -1,5 +1,5 @@
 import admin from "firebase-admin";
-import serviceAccount from "./config/dozerAccountKey.json" assert { type: "json" };
+import serviceAccount from "./dozerAccountKey.json" assert { type: "json" };
 // import { WebSocketServer } from "ws";
 import { seedAdminUser } from "./seeder/admin.seed.js";
 import { seedTestUsers, seedUsers } from "./seeder/user.seed.js";
