@@ -4,6 +4,7 @@ import axios from "axios"; // Import axios
 import { nanoid } from "nanoid"; // Import nanoid
 import crypto from "crypto";
 import { sendNotification } from "../controllers/notification.controller.js";
+import { v4 as uuidv4 } from "uuid";
 
 export const createBooking = async (req, res) => {
   try {
@@ -53,7 +54,7 @@ export const createBooking = async (req, res) => {
     const txRef = nanoid();
 
     const booking = {
-      id: nanoid(),
+      id: uuidv4(),
       equipmentId: equipmentId,
       equipmentName: equipment.name,
       equipmentPrice: equipment.pricePerHour,
