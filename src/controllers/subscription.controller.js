@@ -125,7 +125,8 @@ export const verifySubscription = async (req, res) => {
             type: "Subscription",
             subscriptionType: subscription.subscriptionType,
           },
-          process.env.FIREBASE_DEVICE1_TOKEN
+          process.env.FIREBASE_DEVICE1_TOKEN,
+          user.id
         );
 
         return res.json({
@@ -229,3 +230,4 @@ export const isSubscribed = async (req, res) => {
     res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
   }
 };
+
