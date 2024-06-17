@@ -1,6 +1,9 @@
-const seedBidSpaces = async () => {
+import faker from "faker";
+import { v4 as uuidv4 } from "uuid";
+import { UserProfile, BidSpace, sequelize } from "../models/index.js";
+
+export const seedBidSpaces = async () => {
   try {
-   
     // Fetch all users
     const users = await UserProfile.findAll();
 
