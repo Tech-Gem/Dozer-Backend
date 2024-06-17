@@ -6,6 +6,7 @@ import { seedTestUsers, seedUsers } from "./seeder/user.seed.js";
 import { seedEquipment } from "./seeder/equipment.seed.js";
 import { seedBookings } from "./seeder/booking.seed.js";
 import { seedUserProfiles } from "./seeder/userProfile.seed.js";
+import { seedBidSpaces } from "./seeder/bid.space.seed.js";
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -94,6 +95,7 @@ const deleteSeedData = async () => {
     await db.Equipment.destroy({ where: {} });
     await db.Review.destroy({ where: {} });
     await db.Subscription.destroy({ where: {} });
+    await db.BidSpace.destroy({ where: {} });
 
     console.log("All seed data deleted");
   } catch (error) {
@@ -115,6 +117,7 @@ const seedData = async () => {
     await seedUserProfiles(userIds);
   }
   await seedBookings();
+  await seedBidSpaces();
 };
 
 db.sequelize.sync().then(() => {

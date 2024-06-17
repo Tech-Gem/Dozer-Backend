@@ -2,51 +2,50 @@ import faker from "faker";
 import db from "../models/index.js";
 import { v4 as uuidv4 } from "uuid";
 
-export const seedBookings = async () => {
-  const equipments = await db.Equipment.findAll();
+export const seedBidSpaces = async () => {
   const users = await db.User.findAll();
   const usersProfiles = await db.UserProfile.findAll();
 
-  if (equipments.length === 0) {
-    console.error("No equipment available for seeding bookings.");
-    return;
-  }
-
   if (users.length === 0) {
-    console.error("No users available for seeding bookings.");
+    console.error("No users available for seeding BidSpaces.");
     return;
   }
 
-  const bookings = [];
+  if (usersProfiles.length === 0) {
+    console.error("No user profiles available for seeding BidSpaces.");
+    return;
+  }
+
+  const bidSpaces = [];
 
   for (let i = 0; i < 10; i++) {
-    const equipment = faker.random.arrayElement(equipments);
     const user = faker.random.arrayElement(users);
-    const userProfile = faker.random.arrayElement(usersProfiles);
+    const userProfile = usersProfiles.find(
+      (profile) => profile.userId === user.id
+    );
 
-    bookings.push({
+    if (!userProfile) {
+      console.error(`No profile found for user with ID: ${user.id}`);
+      continue;
+    }
+
+    const roomId = uuidv4();
+
+    bidSpaces.push({
       id: uuidv4(),
-      equipmentName: equipment.name,
-      equipmentPrice: equipment.pricePerHour,
-      firstName: userProfile.firstName,
-      lastName: userProfile.lastName,
-      email: user.email,
-      startDate: faker.date.recent(),
-      endDate: faker.date.future(),
-      quantity: faker.datatype.number({ min: 1, max: equipment.quantity }),
-      location: equipment.location,
-      signature: faker.lorem.word(),
-      termsAndConditions: faker.datatype.boolean(),
-      txRef: uuidv4(),
-      paymentStatus: faker.random.arrayElement([
-        "Pending",
-        "Approved",
-        "Rejected",
-      ]),
-      equipmentId: equipment.id,
+      userName: `${userProfile.firstName} ${userProfile.lastName}`,
+      roomId,
+      title: faker.commerce.productName(),
+      description: faker.lorem.paragraph(),
+      priceMin: faker.commerce.price(10, 50, 2),
+      priceMax: faker.commerce.price(51, 100, 2),
+      status: "Open",
+      isHost: true,
+      participants: [user.id],
       userId: user.id,
     });
   }
 
-  await db.Booking.bulkCreate(bookings);
+  await db.BidSpace.bulkCreate(bidSpaces);
+  console.log("BidSpaces have been successfully seeded.");
 };
