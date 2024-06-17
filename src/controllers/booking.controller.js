@@ -53,7 +53,7 @@ export const createBooking = async (req, res) => {
     const txRef = nanoid();
 
     const booking = {
-      ...req.body,
+      id: nanoid(),
       equipmentId: equipmentId,
       equipmentName: equipment.name,
       equipmentPrice: equipment.pricePerHour,
@@ -117,7 +117,6 @@ export const createBooking = async (req, res) => {
     );
 
     return res.json({
-      bookingId: booking.id,
       msg: "Booking requested successfully. Notification sent to the renter.",
       notification: notificationResult.message,
       booking,
