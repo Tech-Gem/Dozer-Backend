@@ -112,7 +112,7 @@ export const createBooking = async (req, res) => {
     // }
     const notificationResult = await sendNotification(
       "Booking Requested",
-      `A new booking request has been made for your equipment: ${equipment.name}. Amount: ${equipment.quantity}. `,
+      `A new booking request has been made for your equipment: ${equipment.name}. Amount: ${equipment.quantity}. BookingId: ${booking.id}`,
       { type: "Booking Request", equipment: equipment.name },
       process.env.FIREBASE_DEVICE2_TOKEN,
       user.id,
