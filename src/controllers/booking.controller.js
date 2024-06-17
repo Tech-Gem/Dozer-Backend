@@ -117,9 +117,10 @@ export const createBooking = async (req, res) => {
     );
 
     return res.json({
+      bookingId: booking.id,
       msg: "Booking requested successfully. Notification sent to the renter.",
       notification: notificationResult.message,
-      ...booking,
+      booking,
     });
   } catch (error) {
     console.log(error);
