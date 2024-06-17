@@ -50,14 +50,7 @@ export const saveNotification = async (userId, message, type) => {
 };
 
 // Function to send notification
-export const sendNotification = async (
-  title,
-  body,
-  data,
-  token,
-  userId,
-  bookingId
-) => {
+export const sendNotification = async (title, body, data, token, userId, bookingId) => {
   try {
     const message = {
       notification: { title, body },
@@ -71,11 +64,7 @@ export const sendNotification = async (
     // Save the notification to the database
     await saveNotification(userId, body, data.type);
 
-    return {
-      status: "success",
-      message: "Message sent successfully",
-      bookingId,
-    };
+    return { status: "success", message: "Message sent successfully" };
   } catch (error) {
     console.error("Error sending message:", error);
     throw new Error("Error sending message");
