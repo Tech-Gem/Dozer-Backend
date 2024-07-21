@@ -15,9 +15,8 @@ export default {
         defaultValue: "",
       },
       type: {
-        type: Sequelize.ENUM("info", "warning", "error"),
-        allowNull: false,
-        defaultValue: "info",
+        type: Sequelize.ENUM,
+        values: ["Subscription", "Booking Request", "Booking Confirmation"]
       },
       isRead: {
         type: Sequelize.BOOLEAN,

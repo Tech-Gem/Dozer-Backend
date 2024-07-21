@@ -26,7 +26,6 @@ export default (sequelize, DataTypes) => {
       type: {
         type: DataTypes.ENUM,
         values: ["Subscription", "Booking Request", "Booking Confirmation"],
-        defaultValue: "info",
       },
       isRead: {
         type: DataTypes.BOOLEAN,
